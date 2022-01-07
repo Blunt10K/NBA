@@ -1,11 +1,12 @@
-from Web_scraper import Teams
 class Team_standings:
     
-    def __init__(self):
+    def __init__(self, teams):
         self.REG = 0
         self.PRE = 1
         self.labels =("regular_season", "pre_season")
-        self.teams = Teams()
+        self.teams = teams
+        self.reg_fp = "./team_standings/reg_season/"
+        self.pre_fp = "./team_standings/pre_season/"
 
 
     def gen_key(self, year, season_type):
@@ -32,7 +33,7 @@ class Team_standings:
         this_year = strftime("%Y",localtime())
 
         filename = self.gen_key(this_year,self.labels[self.REG]) + ".csv"
-        filepath = "./team_standings/reg_season/" + filename
+        filepath = self.reg_fp + filename
         
         reg_season = self.teams.build_url(this_year)
         table = self.teams.build_table(reg_season,False)
@@ -40,7 +41,7 @@ class Team_standings:
         
         
         filename = self.gen_key(this_year,self.labels[self.PRE]) + ".csv"
-        filepath = "./team_standings/pre_season/" + filename
+        filepath =  self.pre_fp + filename
         
         pre_season = self.teams.build_url(this_year,preseason = True)
         table = self.teams.build_table(pre_season,False)
@@ -56,12 +57,12 @@ class Team_standings:
 
         for y in range(year,year-last_n_years,-1):
             filename = self.gen_key(str(y-1),self.labels[self.REG]) + ".csv"
-            filepath = "./team_standings/reg_season/" + filename
+            filepath = self.reg_fp + filename
             self.save_standings(filepath,str(y-1))
             
             
             filename = self.gen_key(str(y-1),self.labels[self.PRE]) + ".csv"
-            filepath = "./team_standings/pre_season/" + filename
+            filepath = self.pre_fp + filename
             self.save_standings(filepath,str(y-1),True)
         
         return
