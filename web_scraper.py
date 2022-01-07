@@ -74,7 +74,7 @@ class Team_standings:
         
         
     def save_standings(self,filepath,year,preseason = False):
-        if(not exists(filepath)):
+        if(exists(filepath)):
             return
         
         root = "https://www.espn.com/nba/standings/_"
