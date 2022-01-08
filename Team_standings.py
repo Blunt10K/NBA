@@ -1,3 +1,6 @@
+from os.path import exists
+import pandas as pd
+
 class Team_standings:
     
     def __init__(self, teams):

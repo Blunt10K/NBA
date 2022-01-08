@@ -1,4 +1,6 @@
 import pandas as pd
+# import requests as req
+# from requests.exceptions import Timeout 
 
 class Teams:
     def __init__(self):
@@ -40,9 +42,58 @@ class Teams:
         return df
 
     def build_table(self, url,complete_league=True):
+        # try:
+        #     page = req.get(url)
+        # except Timeout:
         dfs = pd.read_html(url,match=".+ | \n")
         stats = dfs[1] 
         teams = self.correct_teams(dfs[0]) # Needed to correct empty table header on espn site
         table = teams.join(stats)
 
         return self.preprocess(table,complete_league)
+
+
+class Players:
+    def __init__(self):
+        self.REG = "2"
+        self.POST = "3"
+        self.root = "https://www.espn.com/nba/team/stats/_/name" # + [teamname -prefix_1] +
+        self.mid = "/season" # +[year] YYYY +
+        self.tail = "/seasontype" # + [2|3] 2 = regular season, 3 = postseason
+        team_abbrvs = pd.read_csv("team_names.csv",usecols=["prefix_1"])
+        self.team_names = "|".join(list(team_abbrvs["prefix_1"].str.upper()))
+        del team_abbrvs
+        
+    def build_url(self,year,team,postseason = False):
+        if(postseason):
+            return self.root + "/" + team + self.mid + "/" +year + self.tail + "/" +self.POST
+        
+        return self.root + "/" + team + self.mid + "/" +year + self.tail + "/" +self.REG
+    
+    def preprocess(self,df,shooting = True):
+        processed = df["Name"].str.extract(r'(.+ | Total)([A-Z]+\**)',expand = True)
+        
+        processed = processed.drop([len(processed)-1])
+        
+        if(shooting):
+            df.insert(1,"POS",processed[1])
+            
+        df["Name"] = processed[0].str.strip()
+        
+        df = df.drop([len(df)-1])
+
+        return df
+        
+    def build_table(self, url, team):
+        dfs = pd.read_html(url)
+        
+        players = pd.concat([dfs[0],dfs[1]],axis=1)
+        shooting = pd.concat([dfs[2],dfs[3]],axis=1)
+        
+        players = self.preprocess(players,False)
+        shooting = self.preprocess(shooting)
+        
+        table = shooting.join(players.set_index("Name"),on = "Name")
+        table["Team"] = team.upper()
+
+        return table
