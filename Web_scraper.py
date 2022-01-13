@@ -1,6 +1,4 @@
 import pandas as pd
-# import requests as req
-# from requests.exceptions import Timeout 
 
 class Teams:
     def __init__(self):
@@ -42,9 +40,6 @@ class Teams:
         return df
 
     def build_table(self, url,complete_league=True):
-        # try:
-        #     page = req.get(url)
-        # except Timeout:
         dfs = pd.read_html(url,match=".+ | \n")
         stats = dfs[1] 
         teams = self.correct_teams(dfs[0]) # Needed to correct empty table header on espn site
