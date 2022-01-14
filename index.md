@@ -1,4 +1,4 @@
-## Welcome to Our GitHub Page for Our NBA Data Science Project
+## Welcome to the GitHub Page for Our NBA Data Science Project
 
 <!-- You can use the [editor on GitHub](https://github.com/Blunt10K/NBA/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
 
