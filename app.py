@@ -2,7 +2,6 @@ from dash import Dash
 from dash import html
 from dash.dependencies import Input, Output
 import plotly.express as px
-from datetime import date
 from dash import dcc
 
 from helpers import *
