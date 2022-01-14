@@ -104,6 +104,7 @@ fig.update_layout(title_text="PTS for top "+str(top_n_players)+" players at "+ p
 
 
 app = Dash(__name__)
+server = app.server
 
 app.layout = html.Div(style={'backgroundColor':colours['background'],'fontFamily':'Arial'}, children=[
 
