@@ -1,6 +1,6 @@
 # Data Science on NBA stats
 
-As avid basketball fans (and players), Isaaac and I started this project to make our own visualisations and analysis of the NBA currently and historically. 
+As avid basketball fans (and players), Isaac and I started this project to make our own visualisations and analysis of the NBA currently and historically. 
 
 The goals of this project are to explore data on NBA players and teams with visualisations through interactive dashboards and to develop a methodology to identify patterns in the NBA seasons.
 
