@@ -114,7 +114,7 @@ app.layout = html.Div(style={'backgroundColor':colours['background'],'fontFamily
 
 
 	html.Div(children=[
-		
+
 			html.Div([html.Label("Position: ", style = {'textAlign': 'center',
 						 'color':colours['text'],
 						 'fontSize':text_size['text']}),
@@ -122,7 +122,7 @@ app.layout = html.Div(style={'backgroundColor':colours['background'],'fontFamily
 					],
 				style = {'textAlign': 'left',"flex":1}
 			),
-		
+
 			html.Div([html.Label("Season: ", style = {'textAlign': 'center',
 						 'color':colours['text'],
 						 'fontSize':text_size['text']}),
@@ -130,8 +130,8 @@ app.layout = html.Div(style={'backgroundColor':colours['background'],'fontFamily
 					 ],
 				style = {'textAlign': 'center',"flex":1}
 			),
-		
-		
+
+
 			html.Div([html.Label("Stats", style = {'textAlign': 'center',
 						 'color':colours['text'],
 						 'fontSize':text_size['text']}),
@@ -139,17 +139,17 @@ app.layout = html.Div(style={'backgroundColor':colours['background'],'fontFamily
 					 ],
 				style = {'textAlign': 'right',"flex":1}
 			)
-		
-		
-			
+
+
+
 
 		],style = {'display':'flex','flex-direction': 'row'}
 	),
-	
+
 	player_slider(),
-	
+
 	dcc.Graph(figure = fig, id = 'graph'),
-	
+
 	year_slider()
 ])
 
@@ -161,14 +161,15 @@ app.layout = html.Div(style={'backgroundColor':colours['background'],'fontFamily
 	Input('n_players','value'),
 	Input('season_drop','value'))
 def update_figure(stat,y,pos,top_n_players,season_type):
-	
+
 	sorted_df = seasons[season_type][y][pos].sort_values(stat,ascending = False).head(top_n_players)
 	fig = px.bar(sorted_df, x=stat, y='Name', color="Team", barmode='overlay', opacity=1)
-	
+
 	fig.update_layout(yaxis={'categoryorder':'max ascending'},
 					  title_text= stat+ " for top "+str(top_n_players)+" players at "+ pos +\
 					  " in the "+str(y) +" regular season", title_x=0.5)
 
 	return fig
 
-app.run_server(debug = False)
+if __name__ == '__main__':
+	app.run_server()
