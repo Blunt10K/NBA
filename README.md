@@ -1,4 +1,4 @@
-<!-- # Welcome to our data science project on the NBA! -->
+# Welcome to our data science project on the NBA!
 
 As avid basketball fans (and players) who hypothesise about trends in the NBA and since we are both intrigued by data science, we aim to prove or disprove these hypotheses with data. We will be able to test the validity of our hypotheses by making optimal decision in the fantasy league we are participating in. 
 
