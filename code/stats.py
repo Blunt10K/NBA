@@ -83,20 +83,13 @@ class Team_standings:
         return year % 100
 
 
-    def save_standings(self,filepath,year,preseason=False):
-        if(exists(filepath)):
-            return
-        
-        
-        return
-    
     def write(self,html,tids,fp):
         df = pd.read_html(html)[0]
         df["TEAM_ID"] = tids
-        
+
         df = df.dropna('columns')
         df.to_csv(fp)
-        return 
+        return
 
     def get_season(self, driver, year,fp, reg_season=True):
         
