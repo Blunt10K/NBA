@@ -126,14 +126,14 @@ class Box_scores:
         
         
         def iter_all(self, url, driver):
-            wait = 10
+            wait = 20
             driver.get(url)
             element = WebDriverWait(driver,wait).until(EC.presence_of_element_located((By.XPATH,self.xpath)))
             s = driver.find_element(By.XPATH,self.select_xpath)
             t = s.text
             t = t.split("\n")
             
-            d = pd.read_csv("../box_score.csv")
+            d = pd.read_csv("../../box_score.csv")
             difference = len(t) - d["Pages"][0]+1
             
             for i in t[1:difference]:

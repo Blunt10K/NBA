@@ -9,35 +9,40 @@ from sqlalchemy import create_engine
 from os import environ
 
 
-def add_new_players(engine, names, ids):
-    condition = str(tuple(ids))
-    existing_players = pd.read_sql("select * from Players where ID IN "+condition,engine)
-        
-    c = pd.DataFrame({"ID":ids,"Name":names}).drop_duplicates()
-    e = c.merge(existing_players,on="ID",how='left',indicator=True,suffixes = ('','_y'))
-    e = e.loc[e["_merge"]== "left_only"][["ID","Name"]]
-        
-    e.to_sql("Players",engine,index=False, if_exists="append")
-    
-    return
 
 
 class Player_stats:
     def __init__(self):
         self.players = Players()        
-        self.root = "../player_stats"
-        self.REG = 0
-        self.POST = 1
-        self.labels =("/regular_season.csv", "/playoffs.csv")
+        self.REG = "002"
+        self.POST = "004"
+        self.db_columns = ['Player_ID', 'Team_ID', 'Age', 'GP', 'W', 'L', 'MINS', 'PTS', 'FGM',
+                           'FGA', 'FGP', 'PM3', 'PA3', 'P3P', 'FTM', 'FTA', 'FTP', 'OREB', 'DREB',
+                           'REB', 'AST', 'TOV', 'STL', 'BLK', 'PF', 'DD2', 'TD3', 'Season_ID']
+        self.engine = create_engine("mariadb+mariadbconnector://"\
+                                  +environ.get("USER")+":"\
+                                  +environ.get("PSWD")+"@127.0.0.1:3306/nba")
         
         
-    def write(self,html,pids,tids,fp):
+    def write(self,html,pids,tids,season_id):
         df = pd.read_html(html)[0]
-        df["PLAYER_ID"] = pids
-        df["TEAM_ID"] = tids
         
+        df = df.drop(columns = ['PLAYER','TEAM','+/-'])
         df = df.dropna('columns')
-        df.to_csv(fp)
+
+        
+        d = dict(zip(df.columns[1:],self.db_columns[2:-1]))
+        df = df.rename(columns=d)
+        
+        
+        df.insert(0,"Player_ID",pids)
+        df.insert(1,"Team_ID",tids)
+        df.insert(len(self.db_columns)-1,"Season_ID",season_id)
+        
+        df = df[self.db_columns]
+        
+        df.to_sql("Seasonal_performance",self.engine,index=False, if_exists="append")
+        
         return 
     
     def get_last_year(self,year):
@@ -45,70 +50,82 @@ class Player_stats:
             return year % 2000
         return year % 100
         
-    def get_season(self, driver, year,fp, reg_season=True):
+    def get_season(self, driver, year,season_id, reg_season=True):
         
         url = self.players.build_url(year,reg_season)
         
         print(url)
-        while(1<2):
-            try:
-                html = self.players.click_all(url, driver)
-                pids, tids = self.players.get_player_and_team_ids(html)
-                break
-            except:
-                print("Error. Trying again.")
+
+        html = self.players.click_all(url, driver)
+        pids, tids = self.players.get_player_and_team_ids(html)
         
-        self.write(html,pids,tids,fp)
+        self.write(html,pids,tids,season_id)
         
         return
         
        
     def get_player_stats(self,last_n_years):
-        year = int(strftime("%Y",localtime()))-1
+        year = int(strftime("%Y",localtime()))
         
         with webdriver.Chrome() as driver:
             for y in range(year,year-last_n_years-1,-1):
-                year_range = str(y-1) + "-{:0>2d}".format(self.get_last_year(y))
+                id_year = "{:0>2d}".format(self.get_last_year(y-1))
+                
+                select = "select SEASON_ID from Seasonal_performance "
+                condition = "where SEASON_ID LIKE '%" + id_year+"'"
+                limit = " limit 10"
+                
+                query = select + condition +limit
+                d = pd.read_sql(query,self.engine)
 
-                file_dir = self.root + "/" + year_range
+                if(len(d)== 0):# there is no data on this year, get it
+                    year_range = str(y-1) + "-{:0>2d}".format(self.get_last_year(y))
+                    season_id = self.REG + id_year
+                    self.get_season(driver,year_range,season_id)
 
-                if(not exists(file_dir)):# there is no data on this year, get it
-                    mkdir(file_dir)
-
-                    fp = file_dir + self.labels[self.REG]
-                    self.get_season(driver,year_range,fp)
-
-
-                    fp = file_dir + self.labels[self.POST]
-                    self.get_season(driver,year_range,fp,reg_season=False)
+                    season_id = self.POST + id_year
+                    self.get_season(driver,year_range,season_id,reg_season=False)
 
         return
-
 
 class Team_standings:
     
     def __init__(self):
-        self.REG = 0
-        self.POST = 1
-        self.labels =("/regular_season.csv", "/playoffs.csv")
+        self.REG = "002"
+        self.POST = "004"
         self.teams = Teams()
-        self.root = "../team_standings/"
+        self.db_columns = ['SEASON_ID', 'TEAM_ID', 'GP', 'W', 'L', 'WINP', 'MINS', 'PTS', 'FGM',
+                        'FGA', 'FGP', 'PM3', 'PA3', 'P3P', 'FTM', 'FTA', 'FTP', 'OREB', 'DREB',
+                        'REB', 'AST', 'TOV', 'STL', 'BLK', 'BLKA', 'PF', 'PFD']
+        self.engine = create_engine("mariadb+mariadbconnector://"\
+                                  +environ.get("USER")+":"\
+                                  +environ.get("PSWD")+"@127.0.0.1:3306/nba")
         
     def get_last_year(self,year):
         if(year > 2000):
             return year % 2000
         return year % 100
 
-
-    def write(self,html,tids,fp):
+    
+    def write(self,html,tids,season_id):
         df = pd.read_html(html)[0]
-        df["TEAM_ID"] = tids
-
+        df = df.drop(columns = ['TEAM','+/-'])
         df = df.dropna('columns')
-        df.to_csv(fp)
-        return
+        
+        d = dict(zip(df.columns,self.db_columns[2:]))
+        df = df.rename(columns=d)
+        
+        df["TEAM_ID"] = tids
+        df["SEASON_ID"] = season_id
+        
+        
+        df = df[self.db_columns]
+        df = df.drop_duplicates()
+        df.to_sql("Team_standings",self.engine,index=False, if_exists="append")
+        
+        return 
 
-    def get_season(self, driver, year,fp, reg_season=True):
+    def get_season(self, driver, year,season_id, reg_season=True):
         
         url = self.teams.build_url(year,reg_season)
         
@@ -116,7 +133,7 @@ class Team_standings:
         
         html,tids = self.teams.get_source_and_teams(url, driver)
         
-        self.write(html,tids,fp)
+        self.write(html,tids,season_id)
         
         return
     
@@ -126,28 +143,31 @@ class Team_standings:
         
         with webdriver.Chrome() as driver:
             for y in range(year,year-last_n_years-1,-1):
-                year_range = str(y-1) + "-{:0>2d}".format(self.get_last_year(y))
+                id_year = "{:0>2d}".format(self.get_last_year(y-1))
                 
-                file_dir = self.root + year_range
-                if(not exists(file_dir)):# there is no data on this year, get it
-                    mkdir(file_dir)
+                select = "select SEASON_ID from Team_standings "
+                condition = "where SEASON_ID LIKE '%" + id_year+"'"
+                limit = " limit 10"
                 
-                    fp = file_dir + self.labels[self.REG]
-                    self.get_season(driver,year_range,fp)
+                query = select + condition +limit
+                d = pd.read_sql(query,self.engine)
+                if(len(d)== 0):# there is no data on this year, get it
+                    year_range = str(y-1) + "-{:0>2d}".format(self.get_last_year(y))
+                    season_id = self.REG + id_year
+                    self.get_season(driver,year_range,season_id)
 
-                    fp = file_dir + self.labels[self.POST]
-                    self.get_season(driver,year_range,fp,reg_season=False)
+                    season_id = self.POST + id_year
+                    self.get_season(driver,year_range,season_id,reg_season=False)
 
         
         return
-
 
 class Box:
     def __init__(self):
         self.boxes = Box_scores()        
         self.table = "Box_scores"
         self.scores =[]
-        self.page_count = pd.read_csv("../box_score.csv")
+        self.page_count = pd.read_csv("../../box_score.csv")
         self.engine = create_engine("mariadb+mariadbconnector://"\
                                   +environ.get("USER")+":"\
                                   +environ.get("PSWD")+"@127.0.0.1:3306/nba")
@@ -155,6 +175,18 @@ class Box:
         self.db_columns = ['Player_ID', 'Team_ID', 'Game_ID', 'Matchup', 'Game_day', 'Result',
                         'MINS', 'PTS', 'FGM', 'FGA', 'FGP', 'PM3', 'PA3', 'P3P', 'FTM', 'FTA',
                         'FTP', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TOV',  'PF']
+
+    def add_new_players(self, names, ids):
+        condition = str(tuple(ids))
+        existing_players = pd.read_sql("select * from Players where ID IN "+condition,self.engine)
+            
+        c = pd.DataFrame({"ID":ids,"Name":names}).drop_duplicates()
+        e = c.merge(existing_players,on="ID",how='left',indicator=True,suffixes = ('','_y'))
+        e = e.loc[e["_merge"]== "left_only"][["ID","Name"]]
+            
+        e.to_sql("Players",self.engine,index=False, if_exists="append")
+        
+        return
 
     def add_new_box_scores(self,df):
         existing = pd.read_sql("select * from Box_scores",self.engine)
@@ -171,7 +203,7 @@ class Box:
         self.scores = df
         df = df.drop(columns = ['Season','+/-','FP'])
         
-        self.add_new_players(self.engine, df[df.columns[0]],pids)
+        self.add_new_players(df[df.columns[0]],pids)
         df = df[df.columns[2:]]
         
         d = dict(zip(df.columns,self.db_columns[3:]))

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 update.py
+python3 box_score_automation.py
