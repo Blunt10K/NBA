@@ -133,7 +133,7 @@ class Box_scores:
             t = s.text
             t = t.split("\n")
             
-            d = pd.read_csv("../../box_score.csv")
+            d = pd.read_csv("../box_score.csv")
             difference = len(t) - d["Pages"][0]+1
             
             for i in t[1:difference]:
