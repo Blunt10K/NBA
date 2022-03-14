@@ -3,6 +3,8 @@ import pandas as pd
 from os.path import exists
 from os import mkdir
 from selenium import webdriver
+# from selenium.webdriver.chrome.options import Options
+
 from web_scraper import Teams, Players,Box_scores
 
 from sqlalchemy import create_engine
@@ -167,6 +169,8 @@ class Box:
         self.boxes = Box_scores()        
         self.table = "Box_scores"
         self.scores =[]
+        # self.options = Options()
+        # self.options.headless = True
         self.page_count = pd.read_csv("../../box_score.csv")
         self.engine = create_engine("mariadb+mariadbconnector://"\
                                   +environ.get("USER")+":"\
