@@ -65,7 +65,6 @@ parso==0.8.3
 pexpect==4.8.0
 pickleshare==0.7.5
 Pillow==9.0.1
-pkg-resources==0.0.0
 plotly==5.6.0
 plotly-geo==1.0.0
 prompt-toolkit==3.0.28
@@ -97,7 +96,6 @@ six==1.16.0
 sniffio==1.2.0
 sortedcontainers==2.4.0
 soupsieve==2.3.1
-SQLAlchemy==1.4.31
 tenacity==8.0.1
 tensorboard==2.0.2
 tensorflow==1.14.0
