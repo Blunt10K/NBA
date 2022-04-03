@@ -11,12 +11,10 @@ def get_data(season,last_n_years=5):
     from time import strftime, localtime
     import pandas as pd
 
-    url_base = 'https://github.com/Blunt10K/NBA/blob/dash/'
     this_year = int(strftime("%Y",localtime())) -1
     dfs = {}
     for y in range(this_year,this_year - last_n_years,-1):
-        url = url_base + str(y)+"_"+season+".csv"
-        df = pd.read_csv(url)
+        df = pd.read_csv("./"+str(y)+"_"+season+".csv")
         dfs[y] = segment_data(df)
 
     return dfs
