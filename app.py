@@ -89,8 +89,8 @@ def season_dropdown():
 				)
 	return d
 
-reg_season = get_data(5,r_season)
-post_season = get_data(5,p_season)
+reg_season = get_data(r_season)
+post_season = get_data(p_season)
 
 seasons = {"regular":reg_season, "post":post_season}
 
