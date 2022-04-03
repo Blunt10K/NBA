@@ -177,7 +177,7 @@ def update_figure(stat,y,pos,top_n_players,season_type):
 
 	fig.update_layout(yaxis={'categoryorder':'max ascending'},
 					  title_text= stat+ " for top "+str(top_n_players)+" players at "+ pos +\
-					  " in the "+str(y) +season_type, title_x=0.5)
+					  " in the "+str(y) +' '+ season_type+ ' season', title_x=0.5)
 
 	return fig
 
