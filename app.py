@@ -102,6 +102,7 @@ fig.update_layout(yaxis={'categoryorder':'max ascending'},title_text="PTS per ga
                   " in the "+str(y) +" regular season", title_x=0.5)
 
 
+
 app = Dash(__name__)
 server = app.server
 
