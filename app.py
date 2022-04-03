@@ -176,7 +176,7 @@ def update_figure(stat,y,pos,top_n_players,season_type):
 	fig = px.bar(sorted_df, x=stat, y='Name', color="Team", barmode='overlay', opacity=1)
 
 	fig.update_layout(yaxis={'categoryorder':'max ascending'},
-					  title_text= stat+ " for top "+str(top_n_players)+" players at "+ pos +\
+					  title_text= +stat+ " per game for top "+str(top_n_players)+" players at "+ pos +\
 					  " in the "+str(y) +' '+ season_type+ ' season', title_x=0.5)
 
 	return fig
