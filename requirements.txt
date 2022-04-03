@@ -45,9 +45,6 @@ joblib==1.1.0
 jupyter-client==7.1.2
 jupyter-core==4.9.2
 jupyter-dash==0.4.1
-keras==2.8.0
-Keras-Applications==1.0.8
-Keras-Preprocessing==1.1.2
 kiwisolver==1.3.2
 lxml==4.8.0
 Markdown==3.3.6
@@ -79,7 +76,6 @@ pyOpenSSL==22.0.0
 pyparsing==3.0.7
 PyPDF2==1.26.0
 PySocks==1.7.1
-pyspark==3.2.1
 python-dateutil==2.8.2
 pytz==2021.3
 PyYAML==6.0
@@ -97,9 +93,6 @@ sniffio==1.2.0
 sortedcontainers==2.4.0
 soupsieve==2.3.1
 tenacity==8.0.1
-tensorboard==2.0.2
-tensorflow==1.14.0
-tensorflow-estimator==1.14.0
 termcolor==1.1.0
 threadpoolctl==3.1.0
 tornado==6.1
