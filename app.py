@@ -98,7 +98,7 @@ seasons = {"regular":reg_season, "post":post_season}
 sorted_df = seasons["regular"][y][pos].sort_values("PTS",ascending = False).head(top_n_players)
 
 fig = px.bar(sorted_df, x='PTS', y="Name", color="Team", barmode='overlay',opacity=1)
-fig.update_layout(title_text="PTS for top "+str(top_n_players)+" players at "+ pos +\
+fig.update_layout(title_text="PTS per game for top "+str(top_n_players)+" players at "+ pos +\
                   " in the "+str(y) +" regular season", title_x=0.5)
 
 
@@ -176,7 +176,7 @@ def update_figure(stat,y,pos,top_n_players,season_type):
 	fig = px.bar(sorted_df, x=stat, y='Name', color="Team", barmode='overlay', opacity=1)
 
 	fig.update_layout(yaxis={'categoryorder':'max ascending'},
-					  title_text= +stat+ " per game for top "+str(top_n_players)+" players at "+ pos +\
+					  title_text= stat+ " per game for top "+str(top_n_players)+" players at "+ pos +\
 					  " in the "+str(y) +' '+ season_type+ ' season', title_x=0.5)
 
 	return fig
