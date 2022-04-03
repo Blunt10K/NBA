@@ -138,19 +138,22 @@ app.layout = html.Div(style={'backgroundColor':colours['background'],'fontFamily
 						player_stats()
 					 ],
 				style = {'textAlign': 'right',"flex":1}
+			),
+
+			html.Div(player_slider(),
+				style = {'textAlign': 'right',"flex":1}
+			),
+
+			html.Div(dcc.Graph(figure = fig, id = 'graph'),
+				style = {'textAlign': 'right',"flex":1}
+			),
+
+			html.Div(year_slider(),
+				style = {'textAlign': 'right',"flex":1}
 			)
-
-
-
 
 		],style = {'display':'flex','flex-direction': 'row'}
 	),
-
-	player_slider(),
-
-	dcc.Graph(figure = fig, id = 'graph'),
-
-	year_slider()
 ])
 
 @app.callback(
