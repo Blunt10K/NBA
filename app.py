@@ -144,19 +144,19 @@ app.layout = html.Div(style={'backgroundColor':colours['background'],'fontFamily
 		],style = {'display':'flex','flex-direction': 'row'}
 	),
 
-	html.br(),
+	# html.br(),
 
 	html.Div(player_slider(),
 		style = {'textAlign': 'center',"flex":1}
 	),
 
-	html.br(),
+	# html.br(),
 
 	html.Div(dcc.Graph(figure = fig, id = 'graph')
 		# style = {'textAlign': 'right',"flex":1}
 	),
 
-	html.br(),
+	# html.br(),
 
 	html.Div(year_slider(),
 		style = {'textAlign': 'center',"flex":1}
