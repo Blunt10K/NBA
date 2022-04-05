@@ -44,9 +44,14 @@ fig.update_yaxes(showgrid=False)
 
 fig.update_traces(textposition='top center')
 
-fig = add_lines(fig)
+fig = add_lines(league_avg,fig)
+
 buttons_style = dict(width='45%',display='inline-block',height='5%')
 toggle = daq.ToggleSwitch(value=True, vertical=False,label='Toggle player labels',id='player_lab',size=32)
+
+opp_teams = [i for i in league['Team'].unique() if i != "DET"]
+opp_teams = sorted(opp_teams)
+
 
 app = Dash(__name__)
 server = app.server
@@ -69,7 +74,7 @@ app.layout = html.Div(className="p-heading",
     Input('n_players','value'))
 def update_figure(opp,player_lab,n):
     
-    df = update_df(opp,n)
+    df = update_df(league,det,opp,n)
 
     fig = toggle_names(df,player_lab)
     
@@ -78,7 +83,7 @@ def update_figure(opp,player_lab,n):
 
     fig.update_xaxes(showgrid=False)
     fig.update_yaxes(showgrid=False)
-    fig = add_lines(fig)
+    fig = add_lines(league_avg,fig)
 
     
     return fig

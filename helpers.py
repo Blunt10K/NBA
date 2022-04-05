@@ -70,7 +70,7 @@ def opposition_select(opps, i, t):
     
     return d
 
-def update_df(opp,n=5):
+def update_df(league,det,opp,n=5):
     opps = league.loc[league['Team']==opp].groupby('Name',as_index=False).mean().sort_values('PTS',ascending=False)
     opps['Team'] = opp
     
@@ -100,7 +100,7 @@ def toggle_names(df,player_lab=True):
         
     return fig
 
-def add_lines(fig,grouping='League'):
+def add_lines(league_avg,fig,grouping='League'):
     avgs = {'League':league_avg}
     
     fig.add_hline(avgs[grouping]['PM3'],annotation_text = grouping+' average',
