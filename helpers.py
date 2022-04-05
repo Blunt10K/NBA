@@ -117,6 +117,6 @@ def left(opp_teams):
     return d
 
 def right(t):
-    d = html.Div([html.Label("Number of players for each team: ", style = {'textAlign': 'center'}),t],)
+    d = html.Div([html.Label("Number of players: ", style = {'textAlign': 'center'}),t],)
     return d
 
