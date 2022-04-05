@@ -7,39 +7,8 @@ import dash_daq as daq
 
 import numpy as np
 import pandas as pd
+from helpers import *
 
-
-def map_conference(df):
-    west = ['NOP','UTA', 'MEM','PHX', 'POR', 'SAC', 'SAS', 'OKC','DAL', 'DEN', 'GSW', 'HOU','LAC', 'LAL','MIN']
-    
-    df['Conference'] = 'west'
-    df['Conference'].where(df['Team'].isin(west),'east',inplace=True)
-    return df
-
-
-def map_division(df):
-    divisions = {}
-    # eastern conference divisions
-    divisions['atlantic'] = ['BOS','BKN','NYK','PHI','TOR']
-    divisions['central'] = ['CHI','CLE','DET','IND','MIL']
-    divisions['southeast'] = ['ATL','CHA','MIA','ORL','WAS']
-    
-    # western conference divisions
-    divisions['northwest'] = ['DEN', 'MIN','OKC','POR','UTA']
-    divisions['pacific'] = ['GSW','LAC','LAL','PHX','SAC']
-    divisions['southwest'] = ['DAL','HOU','MEM','NOP','SAS']
-    
-    df['Division'] = 'west'
-    
-    for i in divisions:
-        df['Division'].where(~df['Team'].isin(divisions[i]),i,inplace=True)
-    return df
-
-def calculate_features(df):
-    df['eFG'] = 100*(df['FGM']+.5*df['PM3'])/df['FGA']
-    df['PM2'] = df['FGM'] - df['PM3']
-
-    return df
 
 league = pd.read_csv('Pistons_dash.csv')
 
@@ -56,92 +25,63 @@ det = league.loc[league['Team']=='DET']
 det_avg = det.mean(numeric_only=True)
 
 
-# def teams(names):
-#     options = []
-#     for i in names:
-#         d = {}
-#         d["label"] = i
-#         d["value"] = i
-#         options.append(d)
-        
-#     return options
 
-
-# # In[26]:
-
-
-# def opposition_select(opps, i):
-#     opts = team(opps)
-#     d = dcc.Dropdown(options=opts,value=None,id=i,multi=False)
-
-
-# # In[38]:
-
-
-opps = league.loc[league['Team']=='BKN'].groupby('Name').mean().sort_values('PTS',ascending=False)
-opps['Team'] = 'BKN'
-d = det.groupby('Name').mean().sort_values('PTS',ascending=False)
+opps = league.loc[league['Team']=='ATL'].groupby('Name',as_index=False).mean().sort_values('PTS',ascending=False)
+opps['Team'] = 'ATL'
+d = det.groupby('Name',as_index=False).mean().sort_values('PTS',ascending=False)
 d['Team'] = 'DET'
-df = pd.concat((d.head(10),opps.head(10)))
+df = pd.concat((d.head(5),opps.head(5)))
+df= df.round(1)
 
-fig = px.scatter(y="PM3", x="PM2",color="eFG",size = "AST",data_frame = df,symbol='Team',text=df.index,
-                 color_continuous_scale='RdBu_r')#RdYlBu_r
-fig.update_layout(title ="Average 3PM vs 2PM", xaxis_title = "2PM",
-                  title_x = 0.5,yaxis_title = "3PM",coloraxis_colorbar_x=1.15)
+fig = toggle_names(df)
+fig.update_layout(title ="Bubble size = Average AST",
+                  title_x = 0.5,coloraxis_colorbar_x=1.15)
 
-temp = det.groupby('Name').mean().sort_values('PM2',ascending=False)
+
 
 fig.update_xaxes(showgrid=False)
 fig.update_yaxes(showgrid=False)
 
-fig.add_hline(league_avg['PM3'],annotation_text = 'League PM3 average',annotation_position='left top')
-fig.add_vline(league_avg['PM2'],annotation={'text':'League PM2 average'})
-other = det.groupby('Name').mean()
-
-
 fig.update_traces(textposition='top center')
 
-
+fig = add_lines(fig)
+buttons_style = dict(width='45%',display='inline-block',height='5%')
+toggle = daq.ToggleSwitch(value=True, vertical=False,label='Toggle player labels',id='player_lab',size=32)
 
 app = Dash(__name__)
 server = app.server
 
 
+
 app.layout = html.Div(className="p-heading",
-                      children=[html.H1(children="Detroit Pistons scoring"),
-                                html.Div(children=[dcc.Graph(figure = fig, id = 'graph')])
+                      children=[html.H1(children="Detroit Pistons field goal production"),
+                                html.Div(children=[html.Div(children=[left(opp_teams)],
+                                                    style=buttons_style),
+                                                    html.Div(children=[right(slider())],
+                                                    style=buttons_style)]),
+                                html.Div([toggle, dcc.Graph(figure = fig, id = 'graph')])
 ])
 
 @app.callback(
-    Output('graph','figure'))
-#     Output('graph2','figure'),
-#     Output('graph3','figure'),
-#     Input('g1','value'))
-def update_figure():
-    opps = league.loc[league['Team']=='BKN'].groupby('Name').mean().sort_values('PTS',ascending=False)
-    opps['Team'] = 'BKN'
-    d = det.groupby('Name').mean().sort_values('PTS',ascending=False)
-    d['Team'] = 'DET'
-    df = pd.concat((d.head(10),opps.head(10)))
+    Output('graph','figure'),
+    Input('drpdwn','value'),
+    Input('player_lab','value'),
+    Input('n_players','value'))
+def update_figure(opp,player_lab,n):
+    
+    df = update_df(opp,n)
 
-    fig = px.scatter(y="PM3", x="PM2",color="eFG",size = "AST",data_frame = df,symbol='Team',text=df.index,
-                    color_continuous_scale='RdBu_r')#RdYlBu_r
-    fig.update_layout(title ="Average 3PM vs 2PM", xaxis_title = "2PM",
-                    title_x = 0.5,yaxis_title = "3PM",coloraxis_colorbar_x=1.15)
-
-    temp = det.groupby('Name').mean().sort_values('PM2',ascending=False)
+    fig = toggle_names(df,player_lab)
+    
+    fig.update_layout(title ="Bubble size = Average AST",title_x = 0.5,
+                      coloraxis_colorbar_x=1.15)
 
     fig.update_xaxes(showgrid=False)
     fig.update_yaxes(showgrid=False)
+    fig = add_lines(fig)
 
-    fig.add_hline(league_avg['PM3'],annotation_text = 'League PM3 average',annotation_position='left top')
-    fig.add_vline(league_avg['PM2'],annotation={'text':'League PM2 average'})
-    other = det.groupby('Name').mean()
-
-
-    fig.update_traces(textposition='top center')
+    
     return fig
-
 
 if __name__ == '__main__':
     app.run_server()
