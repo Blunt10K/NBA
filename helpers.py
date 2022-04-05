@@ -66,7 +66,7 @@ def slider():
 
 def opposition_select(opps, i, t):
     opts = teams(opps)
-    d = dcc.Dropdown(options=opts,value=t,id=i,multi=False)
+    d = dcc.Dropdown(options=opts,value=None,id=i,multi=False)
     
     return d
 
@@ -111,7 +111,7 @@ def add_lines(league_avg,fig,grouping='League'):
     return fig
 
 def left(opp_teams):
-    d = html.Div([html.Label("Opposition: ", style = {'textAlign': 'center'}),
+    d = html.Div([html.Label("Opponent: ", style = {'textAlign': 'center'}),
                     opposition_select(opp_teams,'drpdwn','ATL')])#'textAlign': 'left',
     
     return d

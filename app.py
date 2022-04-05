@@ -30,7 +30,7 @@ opps = league.loc[league['Team']=='ATL'].groupby('Name',as_index=False).mean().s
 opps['Team'] = 'ATL'
 d = det.groupby('Name',as_index=False).mean().sort_values('PTS',ascending=False)
 d['Team'] = 'DET'
-df = pd.concat((d.head(5),opps.head(5)))
+df = d.head()#pd.concat((d.head(5),opps.head(5)))
 df= df.round(1)
 
 fig = toggle_names(df)
@@ -59,7 +59,7 @@ server = app.server
 
 
 app.layout = html.Div(className="p-heading",
-                      children=[html.H1(children="Detroit Pistons field goal production"),
+                      children=[html.H1(children="Detroit Pistons field goal analysis"),
                                 html.Div(children=[html.Div(children=[left(opp_teams)],
                                                     style=buttons_style),
                                                     html.Div(children=[right(slider())],
