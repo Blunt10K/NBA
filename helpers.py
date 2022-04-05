@@ -89,14 +89,14 @@ def toggle_names(df,player_lab=True):
         fig = px.scatter(y="PM3", x="PM2",color="eFG",size = "AST",data_frame = df,symbol='Team',
                          labels=dict(PM3='Average 3PM',PM2='Average 2PM',eFG='eFG%'),range_x=(-.2,df['PM2'].max()+2),
                          text="Name", hover_data = ['PM3','PM2','eFG','AST','Name'],
-                         color_continuous_scale='RdBu_r',range_y=(-.2,df['PM3'].max()+1))
+                         color_continuous_scale='Sunsetdark',range_y=(-.2,df['PM3'].max()+1))
         fig.update_traces(textposition='top center')
 
     else:
         fig = px.scatter(y="PM3", x="PM2",color="eFG",size = "AST",data_frame = df,symbol='Team',
                          labels=dict(PM3='Average 3PM',PM2='Average 2PM',eFG='eFG%'),range_x=(-.2,df['PM2'].max()+2),
                          hover_data = ['PM3','PM2','eFG','AST','Name'],
-                         color_continuous_scale='RdBu_r',range_y=(-.2,df['PM3'].max()+1))
+                         color_continuous_scale='Sunsetdark',range_y=(-.2,df['PM3'].max()+1))
         
     return fig
 
