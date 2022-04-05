@@ -112,14 +112,35 @@ app.layout = html.Div(className="p-heading",
                                 html.Div(children=[dcc.Graph(figure = fig, id = 'graph')])
 ])
 
-# @app.callback(
-#     Output('graph','figure'),
-# #     Output('graph2','figure'),
-# #     Output('graph3','figure'),
-# #     Input('g1','value'))
-# def update_figure(selected):
-    
-#     return fig
+@app.callback(
+    Output('graph','figure'))
+#     Output('graph2','figure'),
+#     Output('graph3','figure'),
+#     Input('g1','value'))
+def update_figure():
+    opps = league.loc[league['Team']=='BKN'].groupby('Name').mean().sort_values('PTS',ascending=False)
+    opps['Team'] = 'BKN'
+    d = det.groupby('Name').mean().sort_values('PTS',ascending=False)
+    d['Team'] = 'DET'
+    df = pd.concat((d.head(10),opps.head(10)))
+
+    fig = px.scatter(y="PM3", x="PM2",color="eFG",size = "AST",data_frame = df,symbol='Team',text=df.index,
+                    color_continuous_scale='RdBu_r')#RdYlBu_r
+    fig.update_layout(title ="Average 3PM vs 2PM", xaxis_title = "2PM",
+                    title_x = 0.5,yaxis_title = "3PM",coloraxis_colorbar_x=1.15)
+
+    temp = det.groupby('Name').mean().sort_values('PM2',ascending=False)
+
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=False)
+
+    fig.add_hline(league_avg['PM3'],annotation_text = 'League PM3 average',annotation_position='left top')
+    fig.add_vline(league_avg['PM2'],annotation={'text':'League PM2 average'})
+    other = det.groupby('Name').mean()
+
+
+    fig.update_traces(textposition='top center')
+    return fig
 
 
 if __name__ == '__main__':
