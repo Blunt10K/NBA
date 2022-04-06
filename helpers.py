@@ -40,8 +40,6 @@ def calculate_features(df):
 
     return df
 
-
-
 def teams(names):
     options = []
     for i in names:
@@ -83,30 +81,38 @@ def update_df(league,det,opp,n=5):
     
     return df
 
-def toggle_names(df,player_lab=True):
+def toggle_names(df,league_efg,player_lab=True):
     
     if(player_lab):
         fig = px.scatter(y="PM3", x="PM2",color="eFG",size = "AST",data_frame = df,symbol='Team',
-                         labels=dict(PM3='Average 3PM',PM2='Average 2PM',eFG='eFG%'),range_x=(-.2,df['PM2'].max()+2),
+                         labels=dict(PM3='Average 3PM',PM2='Average 2PM',eFG='eFG%'),range_x=(-.25,df['PM2'].max()+1.5),
                          text="Name", hover_data = ['PM3','PM2','eFG','AST','Name'],
-                         color_continuous_scale='Sunsetdark',range_y=(-.2,df['PM3'].max()+1))
+                         color_continuous_midpoint=league_efg,template='plotly_white',
+                         color_continuous_scale='sunset',range_y=(-.25,df['PM3'].max()+1))
         fig.update_traces(textposition='top center')
-
     else:
-        fig = px.scatter(y="PM3", x="PM2",color="eFG",size = "AST",data_frame = df,symbol='Team',
-                         labels=dict(PM3='Average 3PM',PM2='Average 2PM',eFG='eFG%'),range_x=(-.2,df['PM2'].max()+2),
-                         hover_data = ['PM3','PM2','eFG','AST','Name'],
-                         color_continuous_scale='Sunsetdark',range_y=(-.2,df['PM3'].max()+1))
-        
+        fig = px.scatter(y="PM3", x="PM2",color="eFG",size = "AST",data_frame = df,symbol='Team',template='plotly_white',
+                         labels=dict(PM3='Average 3PM',PM2='Average 2PM',eFG='eFG%'),range_x=(-.25,df['PM2'].max()+1.5),
+                         hover_data = ['PM3','PM2','eFG','AST','Name'],color_continuous_midpoint=league_efg,
+                         color_continuous_scale='sunset',range_y=(-.25,df['PM3'].max()+1))
+#
+    fig.update_layout(title ="Bubble size = Average AST",
+                  title_x = 0.5,coloraxis_colorbar_x=1.15)
+    
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=False)
+    
     return fig
 
 def add_lines(league_avg,fig,grouping='League'):
     avgs = {'League':league_avg}
     
-    fig.add_hline(avgs[grouping]['PM3'],annotation_text = grouping+' average',
-                  annotation_position='right top',line_dash='dash')
-    fig.add_vline(avgs[grouping]['PM2'],annotation_text= grouping+' average',
-                  annotation_position='right top',line_dash='dash')
+    fig.add_hline(avgs[grouping]['PM3'],annotation_text = grouping+' avg',
+                  annotation_position='right bottom',line_dash='dash',
+                  opacity=.2,annotation_opacity=0.7)
+    fig.add_vline(avgs[grouping]['PM2'],annotation_text= grouping+' avg',
+                  annotation_position='right bottom',line_dash='dash',
+                  opacity=.2,annotation_opacity=0.7)
     
     return fig
 

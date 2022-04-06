@@ -33,7 +33,9 @@ d['Team'] = 'DET'
 df = d.head()#pd.concat((d.head(5),opps.head(5)))
 df= df.round(1)
 
-fig = toggle_names(df)
+league_efg =league['eFG'].mean()
+
+fig = toggle_names(df,league_efg)
 fig.update_layout(title ="Bubble size = Average AST",
                   title_x = 0.5,coloraxis_colorbar_x=1.15)
 
@@ -76,13 +78,7 @@ def update_figure(opp,player_lab,n):
     
     df = update_df(league,det,opp,n)
 
-    fig = toggle_names(df,player_lab)
-    
-    fig.update_layout(title ="Bubble size = Average AST",title_x = 0.5,
-                      coloraxis_colorbar_x=1.15)
-
-    fig.update_xaxes(showgrid=False)
-    fig.update_yaxes(showgrid=False)
+    fig = toggle_names(df,league_efg,player_lab)
     fig = add_lines(league_avg,fig)
 
     
