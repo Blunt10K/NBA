@@ -16,8 +16,7 @@ from sklearn.linear_model import LogisticRegression,SGDClassifier
 def import_data():
     engine = sqlalchemy.create_engine("mariadb+mariadbconnector://"+environ.get("USER")+                                  ":"+environ.get("PSWD")+"@127.0.0.1:3306/nba")
 
-
-    command = "SELECT Teams.Name AS Team, Team_box_scores.* FROM Team_box_scores"+" INNER JOIN Teams ON Team_box_scores.Team_ID = Teams.ID "
+    command = "SELECT Teams.Name AS Team, Team_box_scores.* FROM Team_box_scores"+" INNER JOIN Teams ON Team_box_scores.Team_ID = Teams.ID " 
 
     df = pd.read_sql(command,engine,parse_dates='Game_day')
     drop_columns = ['Team_ID']
