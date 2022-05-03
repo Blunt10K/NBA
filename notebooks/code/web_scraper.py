@@ -57,7 +57,6 @@ class Teams:
                 pass
 
 
-
 class Players:
     def __init__(self):
         self.REG = "Regular%20Season"
@@ -132,18 +131,15 @@ class Box_scores:
             s = driver.find_element(By.XPATH,self.select_xpath)
             t = s.text
             t = t.split("\n")
+
             
-            d = pd.read_csv("../box_score.csv")
-            difference = len(t) - d["Pages"][0]+1
-            
-            for i in t[1:difference]:
+            for i in t[1:]:
                 s = driver.find_element(By.XPATH,self.select_xpath)
                 s = Select(s)
                 s.select_by_visible_text(i)
                 yield driver.page_source
             
-            d["Pages"][0] = int(t[-1])
-            d.to_csv("../box_score.csv",index = False)
+
             return
             
         
@@ -177,6 +173,7 @@ class Box_scores:
                     gids.append(game_id)
                     
             return pids, tids, gids
+
 
 class Team_box_scores:
     def __init__(self):

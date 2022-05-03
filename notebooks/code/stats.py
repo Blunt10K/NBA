@@ -56,7 +56,7 @@ class Player_stats:
         
         url = self.players.build_url(year,reg_season)
         
-        print(url)
+        # print(url)
 
         html = self.players.click_all(url, driver)
         pids, tids = self.players.get_player_and_team_ids(html)
@@ -131,7 +131,7 @@ class Team_standings:
         
         url = self.teams.build_url(year,reg_season)
         
-        print(url)
+        # print(url)
         
         html,tids = self.teams.get_source_and_teams(url, driver)
         
@@ -169,12 +169,13 @@ class Box:
         self.boxes = Box_scores()        
         self.table = "Box_scores"
         self.scores =[]
-        # self.options = Options()
-        # self.options.headless = True
-        self.page_count = pd.read_csv("../../box_score.csv")
+        command = 'SELECT MAX(Game_day) as GD from Box_scores'
+
         self.engine = create_engine("mariadb+mariadbconnector://"\
                                   +environ.get("USER")+":"\
                                   +environ.get("PSWD")+"@127.0.0.1:3306/nba")
+
+        self.max_date = pd.read_sql(command,self.engine,parse_dates=['GD'])
         
         self.db_columns = ['Player_ID', 'Team_ID', 'Game_ID', 'Matchup', 'Game_day', 'Result',
                         'MINS', 'PTS', 'FGM', 'FGA', 'FGP', 'PM3', 'PA3', 'P3P', 'FTM', 'FTA',
@@ -202,46 +203,51 @@ class Box:
         
         return   
 
-    def write(self,html,pids,tids,gids):
-        df = pd.read_html(html,na_values=['-'])[0]
-        self.scores = df
-        df = df.drop(columns = ['Season','+/-','FP'])
+    def write(self,df):        
+                
+        df = df[self.db_columns]
+        df = df.drop_duplicates()
+        df = df.dropna(subset = ['Result'])
+        self.add_new_box_scores(df)
         
+        return
+    
+    def preprocess(self,html, pids, tids, gids):
+        df = pd.read_html(html,na_values=['-'])[0]
+        df = df.drop(columns = ['Season','+/-','FP'])
+
         self.add_new_players(df[df.columns[0]],pids)
         df = df[df.columns[2:]]
-        
+
         d = dict(zip(df.columns,self.db_columns[3:]))
         df = df.rename(columns=d)
         
         df.insert(0, "Player_ID",pids)
         df.insert(1, "Team_ID",tids)
         df.insert(2, "Game_ID",gids)
-        
-        
         df['Game_day'] = pd.to_datetime(df['Game_day'])
         
-        df = df[self.db_columns]
-        df = df.drop_duplicates()
-
-        self.add_new_box_scores(df)
         
-        return 
-    
-    def get_last_year(self,year):
-        if(year > 2000):
-            return year % 2000
-        return year % 100
+        return df
+
         
     def get_season(self, driver, year, reg_season=True):
         
         url = self.boxes.build_url(year,reg_season)
+        df = pd.DataFrame()
         
         for html in self.boxes.iter_all(url, driver):
             pids, tids, gids = self.boxes.get_player_and_team_ids(html)
-            self.write(html,pids,tids,gids)
+            df = pd.concat((df,self.preprocess(html,pids, tids, gids)))  
+
+            if self.max_date['GD'].max() > df['Game_day'].max():
+                break
+
+                
+        self.write(df)
         
         return
-        
+         
        
     def get_player_stats(self,year,reg_season = True):
         with webdriver.Chrome() as driver:
@@ -251,6 +257,11 @@ class Box:
 
         return
 
+    @staticmethod
+    def get_last_year(year):
+        if(year > 2000):
+            return year % 2000
+        return year % 100
 
 class Team_Box:
     def __init__(self):
