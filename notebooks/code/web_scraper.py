@@ -117,11 +117,24 @@ class Box_scores:
             self.xpath = "/html/body/main/div/div/div[2]/div/div/nba-stat-table/div[2]/div[1]/table"
             self.select_xpath = "/html/body/main/div/div/div[2]/div/div/nba-stat-table/div[1]/div/div/select"
             
+<<<<<<< Updated upstream
         def build_url(self,year,reg_season = False):
-            if(reg_season):
-                return self.root + self.mid + year + self.tail + self.REG
+=======
+        def build_url(self,year,s,reg_season = False):
+            form = '%m-%d-%Y'
+            d = datetime.datetime
+            e = datetime.date.today() 
+
+            s = d.strftime(s,form)
+            e = d.strftime(e,form)
+            start = '&DateFrom='+ s.replace('-','%2F')
+            end = '&DateTo='+ e.replace('-','%2F')
             
-            return self.root + self.mid + year + self.tail + self.POST
+>>>>>>> Stashed changes
+            if(reg_season):
+                return self.root + self.mid + year + self.tail + self.REG + start + end 
+            
+            return self.root + self.mid + year + self.tail + self.POST + start + end
         
         
         def iter_all(self, url, driver):
