@@ -9,8 +9,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
-from re import search
-import pandas as pd
+from re import S, search
+# import pandas as pd
+import datetime
 
 class Teams:
     def __init__(self):
@@ -117,27 +118,32 @@ class Box_scores:
             self.xpath = "/html/body/main/div/div/div[2]/div/div/nba-stat-table/div[2]/div[1]/table"
             self.select_xpath = "/html/body/main/div/div/div[2]/div/div/nba-stat-table/div[1]/div/div/select"
             
-        def build_url(self,year,reg_season = False):
+        def build_url(self,year,s,reg_season = False):
+            s = strftime('%m-%d-%Y',s.timetuple())
+            e = datetime.date. today() 
+            # start = '&DateFrom'+ s
+            # end = '&DateTo'+ e
             if(reg_season):
                 return self.root + self.mid + year + self.tail + self.REG
             
             return self.root + self.mid + year + self.tail + self.POST
         
         
-        def iter_all(self, url, driver):
+        def iter_all(self, url):
             wait = 20
-            driver.get(url)
-            element = WebDriverWait(driver,wait).until(EC.presence_of_element_located((By.XPATH,self.xpath)))
-            s = driver.find_element(By.XPATH,self.select_xpath)
-            t = s.text
-            t = t.split("\n")
-
-            
-            for i in t[1:]:
+            with webdriver.Chrome() as driver:
+                driver.get(url)
+                element = WebDriverWait(driver,wait).until(EC.presence_of_element_located((By.XPATH,self.xpath)))
                 s = driver.find_element(By.XPATH,self.select_xpath)
-                s = Select(s)
-                s.select_by_visible_text(i)
-                yield driver.page_source
+                t = s.text
+                t = t.split("\n")
+
+                
+                for i in t[1:]:
+                    s = driver.find_element(By.XPATH,self.select_xpath)
+                    s = Select(s)
+                    s.select_by_visible_text(i)
+                    yield driver.page_source
             
 
             return
