@@ -119,9 +119,9 @@ class Box_scores:
             
         def build_url(self,year,reg_season = False):
             if(reg_season):
-                return self.root + self.mid + year + self.tail + self.REG + start + end 
+                return self.root + self.mid + year + self.tail + self.REG
             
-            return self.root + self.mid + year + self.tail + self.POST + start + end
+            return self.root + self.mid + year + self.tail + self.POST
         
         
         def iter_all(self, url, driver):
