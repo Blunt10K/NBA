@@ -119,8 +119,8 @@ class Box_scores:
             self.select_xpath = "/html/body/main/div/div/div[2]/div/div/nba-stat-table/div[1]/div/div/select"
             
         def build_url(self,year,s,reg_season = False):
-            s = strftime('%m-%d-%Y',s.timetuple())
-            e = datetime.date. today() 
+            # s = strftime('%m-%d-%Y',s.timetuple())
+            # e = datetime.date.today() 
             # start = '&DateFrom'+ s
             # end = '&DateTo'+ e
             if(reg_season):
