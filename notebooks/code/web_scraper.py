@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
-from re import S, search
+from re import search
 # import pandas as pd
 import datetime
 
@@ -118,15 +118,16 @@ class Box_scores:
             self.xpath = "/html/body/main/div/div/div[2]/div/div/nba-stat-table/div[2]/div[1]/table"
             self.select_xpath = "/html/body/main/div/div/div[2]/div/div/nba-stat-table/div[1]/div/div/select"
             
-        def build_url(self,year,s,reg_season = False):
-            # s = strftime('%m-%d-%Y',s.timetuple())
-            # e = datetime.date.today() 
-            # start = '&DateFrom'+ s
-            # end = '&DateTo'+ e
+        def build_url(self,year,start_date,reg_season = False):
+            d = datetime.datetime
+            s = d.strftime(start_date,'%m-%d-%Y')#06%2F02%2F2022
+            e = d.strftime(datetime.date.today(),'%m-%d-%Y')
+            start = '&DateFrom='+ s.replace('-','%2F')
+            end = '&DateTo='+ e.replace('-','%2F')
             if(reg_season):
-                return self.root + self.mid + year + self.tail + self.REG
+                return self.root + self.mid + year + self.tail + self.REG + start + end
             
-            return self.root + self.mid + year + self.tail + self.POST
+            return self.root + self.mid + year + self.tail + self.POST + start + end
         
         
         def iter_all(self, url):
@@ -176,7 +177,7 @@ class Box_scores:
                     tids.append(team_id)
                 elif(game_match):
                     game_id = search('\d+',game_match.group()).group()
-                    gids.append(game_id)
+                    gids.append(str(game_id))
                     
             return pids, tids, gids
 
