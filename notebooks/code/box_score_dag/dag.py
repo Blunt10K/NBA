@@ -4,7 +4,7 @@ from airflow.operators.python import PythonOperator
 import pendulum
 
 # %%
-with DAG('player_box_scores_etl',default_args={'retries': 4},description='NBA box score DAG',
+with DAG('player_box_scores_etl',default_args={'retries': 4,'owner':'blunt10k'},description='NBA box score DAG',
 schedule_interval='0 21 * * *',catchup=False,tags=['nba_stats'],
 start_date=pendulum.datetime(2022, 6, 15, tz="UTC")) as dag:
 

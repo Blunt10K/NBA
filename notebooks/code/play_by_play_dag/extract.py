@@ -4,6 +4,7 @@ import pandas as pd
 from web_scraper import Play_by_play
 from sqlalchemy import create_engine
 from os import environ
+from os.path import expanduser, join as osjoin
 
 
 def make_engine(user, pswd, db):
@@ -23,12 +24,13 @@ def extract_application(html):
 
 def save_pbp(data):
     # filename is the gameid
+    directory = expanduser(osjoin('~/spark_apps','pbp','games'))
     
     data = data['props']['pageProps']['playByPlay']
 
-    filename = 'games/'+data['gameId']+'.json'
+    filename = data['gameId']+'.json'
 
-    with open(filename,'w') as f:
+    with open(osjoin(directory, filename),'w') as f:
         json.dump(data,f)
         
     return 
