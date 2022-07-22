@@ -17,7 +17,7 @@ Finally, we will model this data to identify patterns and generate insights on t
 We organise this project in several branches. Please feel free to peruse them to see our work on different applications. Some noteable branches are:
 
 - data_engineering (data engineering)
-- pistons (a dashboard built for the Detroit Pistions)
+- pistons (a dashboard built for the Detroit Pistions. Link: https://pistons-scoring.herokuapp.com/) 
 
 ### Hey, we all have to start somewhere. Why not here?
 
