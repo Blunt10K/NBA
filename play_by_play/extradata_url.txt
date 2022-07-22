@@ -1,2 +1,0 @@
-https://www.nba.com/game/<matchup, home team>-<game_id>/box-score#box-score
-bos-vs-gsw-0042100405/box-score#box-score
