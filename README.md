@@ -5,5 +5,15 @@ This branch is devoted to the data collection and exploratory analysis of box sc
 ![Schema diagram](schema.svg?raw=true "NBA database schema")
 
 
-# Some basic analyses
-Some exploratory analyses are included in the notebooks.
+## Organisation
+
+The directories in this branch contain code for Airflow DAGs that can be used for the automated collection of their respective data. 
+
+### Box scores
+
+These contain traditional statistics collected by the NBA at the end of each game which include points, assists, personal fouls, etc.
+
+
+### Play by play data
+
+These contain data about events that occur over the course of an individual game. The data include shot locations and types, violations, rebounds and descriptions of the event. The events are timestamped with repsect to the periods they occur in and include players involved.
