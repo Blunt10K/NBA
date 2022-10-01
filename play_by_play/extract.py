@@ -12,15 +12,18 @@ def extract_application(html):
     from bs4 import BeautifulSoup
 
     soup = BeautifulSoup(html,'html5lib')
-    app_script = soup.find('script',{'type':"application/json"})
 
-    return json.loads(app_script.decode_contents())
+    return soup.find('script',{'type':"application/json"})
 
 
-def save_pbp(data, directory):
+def save_pbp(app_script, directory):
     from os.path import join as osjoin
     # filename is the gameid
-    
+
+    if not app_script:
+        return
+
+    data = json.loads(app_script.decode_contents())
     data = data['props']['pageProps']['playByPlay']
 
     filename = data['gameId']+'.json'
