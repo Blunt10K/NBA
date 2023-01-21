@@ -9,10 +9,17 @@ def get_last_year(year):
         return year % 2000
     return year % 100
 
+
 # %%
 def extract():
     from db_utils import get_start_date
     import pandas as pd
+
+    def get_table(html):
+        dfs = pd.read_html(html,flavor = 'bs4')
+        for idx, df in enumerate(dfs):
+            if 'player' in [i.strip().lower() for i in df.columns]:
+                return idx, df
 
 
     start_date = get_start_date()
@@ -43,7 +50,7 @@ def extract():
     date = strftime('%Y-%m-%d',localtime())
     count = 0
     for page in bs.iter_all(url):
-        df = pd.read_html(page,flavor = 'bs4')[0]
+        df = bs.get_table(page)
 
         pids, tids, gids = bs.get_player_and_team_ids(page)
         
@@ -53,9 +60,13 @@ def extract():
         
         filename = date+'_page_'+str(count)+'.csv'
 
-        df.to_csv(osjoin(directory,filename),index=False)
+        to_write = bs.columns + ['pids','tids','gids']
+
+        df.to_csv(osjoin(directory,filename),index=False, columns = to_write)
 
         count += 1
+
+    return
 
 
 def transform():
@@ -74,7 +85,7 @@ def transform():
     schema=extract_schema(),header=True,dateFormat='MM/dd/yyyy')
 
     # drop unneeded columns
-    df = df.drop('Season','FP','3P%','FG%','FT%','REB')
+    df = df.drop('FP','3P%','FG%','FT%','REB')
 
     box_scores(df, root)
     players(df, root)

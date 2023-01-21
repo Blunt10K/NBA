@@ -52,7 +52,7 @@ def add_new(df, table, column='id'):
     merged = df.merge(existing,on=column,how='left',indicator=True)
     merged = merged[merged['_merge']=='left_only'].drop(columns=['_merge'])
 
-    added = merged.to_sql(table,engine,index=False,if_exists='append',method='multi')
+    added = merged.to_sql(table,engine,index=False,if_exists='append')
 
     print(f'{added} rows added')
 

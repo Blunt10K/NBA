@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import re
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 from selenium import webdriver
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.by import By
@@ -10,8 +11,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
 from re import search
-# import pandas as pd
-import datetime
+import pandas as pd
+from datetime import datetime as dt
 
 class Teams:
     def __init__(self):
@@ -66,6 +67,7 @@ class Players:
         self.mid = "Season=" # +[year] YYYY-YY +
         self.tail = "&SeasonType=" # + [Regular%20Season|Playoffs]
         self.xpath = "/html/body/main/div/div/div[2]/div/div/nba-stat-table/div[1]/div/div/select"
+        
 
     def build_url(self,year,reg_season = False):
         if(reg_season):
@@ -115,13 +117,18 @@ class Box_scores:
             self.root = "https://www.nba.com/stats/players/boxscores/?" # + [teamname -prefix_1] +
             self.mid = "Season=" # +[year] YYYY-YY +
             self.tail = "&SeasonType=" # + [Regular%20Season|Playoffs]
-            self.xpath = "/html/body/main/div/div/div[2]/div/div/nba-stat-table/div[2]/div[1]/table"
-            self.select_xpath = "/html/body/main/div/div/div[2]/div/div/nba-stat-table/div[1]/div/div/select"
+            self.xpath = "/html/body/div[1]/div[2]/div[2]/div[3]/section[2]/div/div[2]/div[3]/table"
+            self.select_xpath = "/html/body/div[1]/div[2]/div[2]/div[3]/section[2]/div/div[2]/div[2]/div[1]/div[3]/div/label/div/select"
+            self.table_idx = None
+            self.columns = ['PLAYER', 'TEAM', 'MATCH UP', 'GAME DATE', 'W/L', 'MIN', 'PTS', 'FGM',
+            'FGA', 'FG%', '3PM', '3PA', '3P%', 'FTM', 'FTA', 'FT%', 'OREB', 'DREB',
+            'REB', 'AST', 'STL', 'BLK', 'TOV', 'PF', '+/-', 'FP']
+            
             
         def build_url(self,year,start_date,reg_season = False):
-            d = datetime.datetime
-            s = d.strftime(start_date,'%m-%d-%Y')#06%2F02%2F2022
-            e = d.strftime(datetime.date.today(),'%m-%d-%Y')
+            
+            s = dt.strftime(start_date,'%m-%d-%Y')#06%2F02%2F2022
+            e = dt.strftime(dt.today(),'%m-%d-%Y')
             start = '&DateFrom='+ s.replace('-','%2F')
             end = '&DateTo='+ e.replace('-','%2F')
             if(reg_season):
@@ -131,7 +138,7 @@ class Box_scores:
         
         
         def iter_all(self, url):
-            wait = 20
+            wait = 15000
             with webdriver.Chrome() as driver:
                 driver.get(url)
                 element = WebDriverWait(driver,wait).until(EC.presence_of_element_located((By.XPATH,self.xpath)))
@@ -148,11 +155,18 @@ class Box_scores:
             
 
             return
+
+        def get_table(self, html):
+            dfs = pd.read_html(html, flavor = 'bs4')
+            for idx, df in enumerate(dfs):
+                if 'player' in [i.strip().lower() for i in df.columns]:
+                    self.table_idx = idx
+                    return df
             
         
         def get_player_and_team_ids(self,html):
             soup = BeautifulSoup(html, 'html.parser')
-            table = soup.find("table")
+            table = soup.find_all("table")[self.table_idx]
             
             pids = []
             tids = []

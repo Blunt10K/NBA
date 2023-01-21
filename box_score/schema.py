@@ -17,7 +17,7 @@ def extract_schema():
 
     schema = StructType().add('Player','string',False).add('Team','string',False).\
     add('Match Up','string',False).\
-    add('Game Date','date',False).add('Season','string').add('W/L','string').add('MIN','integer').\
+    add('Game Date','date',False).add('W/L','string').add('MIN','integer').\
     add('PTS', 'integer').add('FGM', 'integer').add('FGA', 'integer').add('FG%', 'float').\
     add('3PM', 'integer').add('3PA', 'integer').add('3P%', 'float').add('FTM', 'integer').\
     add('FTA', 'integer').add('FT%', 'float').add('OREB', 'integer').add('DREB', 'integer').\
