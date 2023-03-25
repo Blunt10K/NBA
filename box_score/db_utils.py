@@ -29,7 +29,7 @@ def add_box_scores(spark):
 
     table = 'box_scores'
 
-    path = osjoin('~','spark_apps','box_scores',table)
+    path = osjoin('~','spark_apps','box_score',table)
     path = expanduser(path)
 
     df = spark.read.option('cleanSource','delete').csv(path,schema=box_score_schema()).toPandas()
@@ -78,5 +78,4 @@ def clear_dir(path):
     from os.path import join
 
     for i in listdir(path):
-        if i.endswith('csv'):
-            remove(join(path,i))
+        remove(join(path,i))

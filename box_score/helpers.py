@@ -80,8 +80,8 @@ def transform():
     root = expanduser(osjoin('~/spark_apps','box_score'))
     path = osjoin(root, 'data')
 
-    # stream data
-    df = spark.readStream.option('cleanSource','delete').option('sep',',').csv(path,
+    # read data
+    df = spark.read.option('sep',',').csv(path,
     schema=extract_schema(),header=True,dateFormat='MM/dd/yyyy')
 
     # drop unneeded columns

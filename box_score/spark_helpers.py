@@ -9,11 +9,8 @@ def players(df,root):
     player_df = player_df.withColumnRenamed(cols[0],rename_cols[0]).withColumnRenamed(cols[1],rename_cols[1])
 
     path = osjoin(root, 'players')
-    checkpoint = osjoin(root, 'checkpoints')
 
-    player_df.writeStream.outputMode('append').format('csv').\
-        option('path',path).\
-        option('checkpointLocation',checkpoint).start()
+    player_df.write.mode('append').csv(path)
 
 
 def teams(df,root):
@@ -25,11 +22,8 @@ def teams(df,root):
     team_df = team_df.withColumnRenamed(cols[0],rename_cols[0]).withColumnRenamed(cols[1],rename_cols[1])
 
     path = osjoin(root, 'teams')
-    checkpoint = osjoin(root, 'checkpoints')
 
-    team_df.writeStream.outputMode('append').format('csv').\
-        option('path',path).\
-        option('checkpointLocation',checkpoint).start()
+    team_df.write.mode('append').csv(path)
 
 # %%
 def box_scores(df,root):
@@ -37,10 +31,10 @@ def box_scores(df,root):
         'DREB', 'AST', 'STL', 'BLK', 'TOV', 'PF', '+/-', 'W/L', 'Game Date', 'Match Up']
 
     box_df = df.select(*cols)
+    non_null = ['pids','tids', 'gids', 'W/L', 'Game Date', 'Match Up']
 
+    box_df = box_df.na.drop(subset=non_null)
+    
     path = osjoin(root, 'box_scores')
-    checkpoint = osjoin(root, 'checkpoints')
 
-    box_df.writeStream.outputMode('append').\
-        format('csv').option('path',path).\
-        option('checkpointLocation',checkpoint).start()
+    box_df.write.mode('append').csv(path)
