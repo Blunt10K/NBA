@@ -3,6 +3,7 @@ from os import environ
 import pandas as pd
 from spark_helpers import *
 from schema import *
+from datetime import timedelta as td
 
 def make_engine(user, pswd, db):
 
@@ -15,10 +16,10 @@ def get_start_date():
     db = 'nba'
     engine = make_engine(environ.get('USER'),environ.get('PSWD'),db)
 
-    command = 'SELECT MAX(game_day)+1 as GD from box_scores;'
-    max_date = pd.read_sql(command,engine)
+    command = 'SELECT MAX(game_day) as GD from box_scores;'
+    max_date = pd.read_sql(command,engine,parse_dates=['GD'])
 
-    max_date['GD'] = pd.to_datetime(max_date['GD'],format='%Y%m%d')
+    max_date['GD'] = max_date['GD'] + td(days = 1)
     
     return max_date.loc[0,'GD']
 
