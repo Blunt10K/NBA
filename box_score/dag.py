@@ -7,7 +7,7 @@ from os.path import expanduser,join as osjoin
 
 # %%
 with DAG('player_box_scores_etl',default_args={'retries': 4,'owner':'blunt10k'},description='NBA box score DAG',
-schedule_interval='0 21 * * *',catchup=False,tags=['nba_stats'],
+schedule_interval='0 13 * * *',catchup=False,tags=['nba_stats'],
 start_date=pendulum.datetime(2022, 6, 15, tz="UTC")) as dag:
 
     dag.doc_md = __doc__
