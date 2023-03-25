@@ -8,7 +8,7 @@ from os.path import expanduser,join as osjoin
 
 # %%
 with DAG('play_by_play_etl',default_args={'retries': 4,'owner':'blunt10k'},description='NBA play by play DAG',
-schedule_interval='0 * * * *',catchup=False,tags=['nba_pbp'],
+schedule_interval='0 15 * * *',catchup=False,tags=['nba_pbp'],
 start_date=pendulum.datetime(2022, 6, 15, tz="Africa/Harare")) as dag:
 
     dag.doc_md = __doc__
