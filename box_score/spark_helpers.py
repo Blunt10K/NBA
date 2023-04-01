@@ -1,6 +1,6 @@
 from os.path import join as osjoin
 def players(df,root):
-    cols = ['pids','Player']
+    cols = ['player_id','player']
 
     rename_cols = ['id','name']
 
@@ -10,11 +10,11 @@ def players(df,root):
 
     path = osjoin(root, 'players')
 
-    player_df.write.mode('append').csv(path)
+    player_df.write.mode('append').parquet(path)
 
 
 def teams(df,root):
-    cols = ['tids','Team']
+    cols = ['team_id','team']
     rename_cols = ['id','name']
 
     team_df = df.select(*cols).distinct()
@@ -23,18 +23,18 @@ def teams(df,root):
 
     path = osjoin(root, 'teams')
 
-    team_df.write.mode('append').csv(path)
+    team_df.write.mode('append').parquet(path)
 
 # %%
 def box_scores(df,root):
-    cols = ['pids','tids', 'gids', 'MIN', 'PTS', 'FGM', 'FGA', '3PM', '3PA', 'FTM', 'FTA', 'OREB',
-        'DREB', 'AST', 'STL', 'BLK', 'TOV', 'PF', '+/-', 'W/L', 'Game Date', 'Match Up']
+    cols = ['player_id','team_id', 'game_id', 'mins', 'pts', 'fgm', 'fga', 'pm3', 'pa3', 'ftm', 'fta', 'oreb',
+        'dreb', 'ast', 'stl', 'blk', 'tov', 'pf', 'plus_minus', 'result', 'game_day', 'match_up']
 
     box_df = df.select(*cols)
-    non_null = ['pids','tids', 'gids', 'W/L', 'Game Date', 'Match Up']
+    non_null = ['player_id','team_id', 'game_id', 'result', 'game_day', 'match_up']
 
     box_df = box_df.na.drop(subset=non_null)
     
     path = osjoin(root, 'box_scores')
 
-    box_df.write.mode('append').csv(path)
+    box_df.write.mode('append').parquet(path)

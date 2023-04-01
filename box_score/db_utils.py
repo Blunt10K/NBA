@@ -33,7 +33,7 @@ def add_box_scores(spark):
     path = osjoin('~','spark_apps','box_score',table)
     path = expanduser(path)
 
-    df = spark.read.option('cleanSource','delete').csv(path,schema=box_score_schema()).toPandas()
+    df = spark.read.option('datetimeRebaseMode','EXCEPTION').parquet(path).toPandas()
 
     add_new(df, table, 'game_id')
     clear_dir(path)
@@ -67,7 +67,7 @@ def primary_keys(spark,table):
     path = osjoin('~','spark_apps','box_score', table)
     path = expanduser(path)
 
-    df = spark.read.option('cleanSource','delete').csv(path, schema=atom_schema()).toPandas()
+    df = spark.read.option('datetimeRebaseMode','EXCEPTION').parquet(path).toPandas()
 
     add_new(df,table)
     clear_dir(path)

@@ -121,7 +121,7 @@ class Box_scores:
             self.select_xpath = "/html/body/div[1]/div[2]/div[2]/div[3]/section[2]/div/div[2]/div[2]/div[1]/div[3]/div/label/div/select"
             self.table_idx = None
             self.columns = ['PLAYER', 'TEAM', 'MATCH UP', 'GAME DATE', 'W/L', 'MIN', 'PTS', 'FGM',
-            'FGA', 'FG%', '3PM', '3PA', '3P%', 'FTM', 'FTA', 'FT%', 'OREB', 'DREB',
+            'FGA', '3PM', '3PA', 'FTM', 'FTA', 'OREB', 'DREB',
             'REB', 'AST', 'STL', 'BLK', 'TOV', 'PF', '+/-', 'FP']
             
             
@@ -161,7 +161,7 @@ class Box_scores:
             for idx, df in enumerate(dfs):
                 if 'player' in [i.strip().lower() for i in df.columns]:
                     self.table_idx = idx
-                    return df
+                    return df[self.columns]
             
         
         def get_player_and_team_ids(self,html):

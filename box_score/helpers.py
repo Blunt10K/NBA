@@ -3,6 +3,9 @@ from web_scraper import *
 from spark_helpers import *
 from schema import *
 from os.path import expanduser,join as osjoin
+import re
+from datetime import datetime as dt
+import numpy as np
 
 def get_last_year(year):
     if(year > 2000):
@@ -12,15 +15,8 @@ def get_last_year(year):
 
 # %%
 def extract():
-    from db_utils import get_start_date
+    from db_utils import get_start_date, clear_dir
     import pandas as pd
-
-    def get_table(html):
-        dfs = pd.read_html(html,flavor = 'bs4')
-        for idx, df in enumerate(dfs):
-            if 'player' in [i.strip().lower() for i in df.columns]:
-                return idx, df
-
 
     start_date = get_start_date()
 
@@ -49,28 +45,41 @@ def extract():
 
     date = strftime('%Y-%m-%d',localtime())
     count = 0
+    rename_cols = {'min':'mins','3pm':'pm3','3pa':'pa3','+/-':'plus_minus','w/l':'result'}
+
     for page in bs.iter_all(url):
         df = bs.get_table(page)
+        df.columns = [i.lower() for i in df.columns]
 
         pids, tids, gids = bs.get_player_and_team_ids(page)
         
-        df['pids'] = pids
-        df['tids'] = tids
-        df['gids'] = gids
+        df['player_id'] = pids
+        df['team_id'] = tids
+        df['game_id'] = gids
         
-        filename = date+'_page_'+str(count)+'.csv'
+        filename = date+'_page_'+str(count)+'.parquet'
 
-        to_write = bs.columns + ['pids','tids','gids']
+        to_write = list(df.columns) + ['player_id','team_id','game_id']
+        to_write = [re.sub('[\s]','_',i) for i in df.columns]
 
-        df.to_csv(osjoin(directory,filename),index=False, columns = to_write)
+        df.columns = to_write
+
+        df.rename(columns = rename_cols, inplace = True)
+
+        df['game_date'] = pd.to_datetime(df['game_date'], format='%m/%d/%Y')
+
+        df.to_parquet(osjoin(directory,filename),index=False)
 
         count += 1
+
+    clear_dir(directory)
 
     return
 
 
 def transform():
     from pyspark.sql import SparkSession
+    import pyspark.sql.functions as f
     from os import environ
     from os.path import expanduser, join as osjoin
 
@@ -81,11 +90,9 @@ def transform():
     path = osjoin(root, 'data')
 
     # read data
-    df = spark.read.option('sep',',').csv(path,
-    schema=extract_schema(),header=True,dateFormat='MM/dd/yyyy')
+    df = spark.read.option('datetimeRebaseMode','EXCEPTION').parquet(path)
 
-    # drop unneeded columns
-    df = df.drop('FP','3P%','FG%','FT%','REB')
+    df = df.withColumn('game_day',f.to_date('game_date'))
 
     box_scores(df, root)
     players(df, root)
