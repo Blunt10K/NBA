@@ -111,89 +111,90 @@ class Players:
 
 
 class Box_scores:
-        def __init__(self):
-            self.REG = "Regular%20Season"
-            self.POST = "Playoffs"
-            self.root = "https://www.nba.com/stats/players/boxscores/?" # + [teamname -prefix_1] +
-            self.mid = "Season=" # +[year] YYYY-YY +
-            self.tail = "&SeasonType=" # + [Regular%20Season|Playoffs]
-            self.xpath = "/html/body/div[1]/div[2]/div[2]/div[3]/section[2]/div/div[2]/div[3]/table"
-            self.select_xpath = "/html/body/div[1]/div[2]/div[2]/div[3]/section[2]/div/div[2]/div[2]/div[1]/div[3]/div/label/div/select"
-            self.table_idx = None
-            self.columns = ['PLAYER', 'TEAM', 'MATCH UP', 'GAME DATE', 'W/L', 'MIN', 'PTS', 'FGM',
-            'FGA', '3PM', '3PA', 'FTM', 'FTA', 'OREB', 'DREB',
-            'REB', 'AST', 'STL', 'BLK', 'TOV', 'PF', '+/-', 'FP']
-            
-            
-        def build_url(self,year,start_date,reg_season = False):
-            
-            s = dt.strftime(start_date,'%m-%d-%Y')#06%2F02%2F2022
-            e = dt.strftime(dt.today(),'%m-%d-%Y')
-            start = '&DateFrom='+ s.replace('-','%2F')
-            end = '&DateTo='+ e.replace('-','%2F')
-            if(reg_season):
-                return self.root + self.mid + year + self.tail + self.REG + start + end
-            
-            return self.root + self.mid + year + self.tail + self.POST + start + end
+    def __init__(self):
+        self.REG = "Regular%20Season"
+        self.POST = "Playoffs"
+        self.root = "https://www.nba.com/stats/players/boxscores/?" # + [teamname -prefix_1] +
+        self.mid = "Season=" # +[year] YYYY-YY +
+        self.tail = "&SeasonType=" # + [Regular%20Season|Playoffs]
+        self.xpath = "/html/body/div[1]/div[2]/div[2]/div[3]/section[2]/div/div[2]/div[3]/table"
+        self.select_xpath = "/html/body/div[1]/div[2]/div[2]/div[3]/section[2]/div/div[2]/div[2]/div[1]/div[3]/div/label/div/select"
+        self.table_idx = None
+        self.columns = ['PLAYER', 'TEAM', 'MATCH UP', 'GAME DATE', 'W/L', 'MIN', 'PTS', 'FGM',
+        'FGA', '3PM', '3PA', 'FTM', 'FTA', 'OREB', 'DREB',
+        'REB', 'AST', 'STL', 'BLK', 'TOV', 'PF', '+/-', 'FP']
         
         
-        def iter_all(self, url):
-            wait = 15000
-            with webdriver.Chrome() as driver:
-                driver.get(url)
-                element = WebDriverWait(driver,wait).until(EC.presence_of_element_located((By.XPATH,self.xpath)))
+    def build_url(self,year,start_date,reg_season = False):
+        
+        s = dt.strftime(start_date,'%m-%d-%Y')#06%2F02%2F2022
+        e = dt.strftime(dt.today(),'%m-%d-%Y')
+        start = '&DateFrom='+ s.replace('-','%2F')
+        end = '&DateTo='+ e.replace('-','%2F')
+        if(reg_season):
+            return self.root + self.mid + year + self.tail + self.REG + start + end
+        
+        return self.root + self.mid + year + self.tail + self.POST + start + end
+    
+    
+    def iter_all(self, url):
+        wait = 15000
+        with webdriver.Chrome() as driver:
+            driver.get(url)
+            element = WebDriverWait(driver,wait).until(EC.presence_of_element_located((By.XPATH,self.xpath)))
+            s = driver.find_element(By.XPATH,self.select_xpath)
+            t = s.text
+            t = t.split("\n")
+            print(s.text, t)
+
+            
+            for i in t[1:]:
                 s = driver.find_element(By.XPATH,self.select_xpath)
-                t = s.text
-                t = t.split("\n")
-
-                
-                for i in t[1:]:
-                    s = driver.find_element(By.XPATH,self.select_xpath)
-                    s = Select(s)
-                    s.select_by_visible_text(i)
-                    yield driver.page_source
-            
-
-            return
-
-        def get_table(self, html):
-            dfs = pd.read_html(html, flavor = 'bs4')
-            for idx, df in enumerate(dfs):
-                if 'player' in [i.strip().lower() for i in df.columns]:
-                    self.table_idx = idx
-                    return df[self.columns]
-            
+                s = Select(s)
+                s.select_by_visible_text(i)
+                yield driver.page_source
         
-        def get_player_and_team_ids(self,html):
-            soup = BeautifulSoup(html, 'html.parser')
-            table = soup.find_all("table")[self.table_idx]
-            
-            pids = []
-            tids = []
-            gids = []
-            
-            player_reg = '/player/\d+'
-            team_reg = '/team/\d+'
-            game_reg = '/game/\d+'
 
-            for l in table.find_all('a'):
-                player_match = search(player_reg,l.get('href'))
+        return
 
-                team_match = search(team_reg,l.get('href'))
+    def get_table(self, html):
+        dfs = pd.read_html(html, flavor = 'bs4')
+        for idx, df in enumerate(dfs):
+            if 'player' in [i.strip().lower() for i in df.columns]:
+                self.table_idx = idx
+                return df[self.columns]
+        
+    
+    def get_player_and_team_ids(self,html):
+        soup = BeautifulSoup(html, 'html.parser')
+        table = soup.find_all("table")[self.table_idx]
+        
+        pids = []
+        tids = []
+        gids = []
+        
+        player_reg = '/player/\d+'
+        team_reg = '/team/\d+'
+        game_reg = '/game/\d+'
+
+        for l in table.find_all('a'):
+            player_match = search(player_reg,l.get('href'))
+
+            team_match = search(team_reg,l.get('href'))
+            
+            game_match = search(game_reg,l.get('href'))
+
+            if(player_match):
+                player_id = int(search('\d+',player_match.group()).group())
+                pids.append(player_id)
+            elif(team_match):
+                team_id = int(search('\d+',team_match.group()).group())
+                tids.append(team_id)
+            elif(game_match):
+                game_id = search('\d+',game_match.group()).group()
+                gids.append(str(game_id))
                 
-                game_match = search(game_reg,l.get('href'))
-
-                if(player_match):
-                    player_id = int(search('\d+',player_match.group()).group())
-                    pids.append(player_id)
-                elif(team_match):
-                    team_id = int(search('\d+',team_match.group()).group())
-                    tids.append(team_id)
-                elif(game_match):
-                    game_id = search('\d+',game_match.group()).group()
-                    gids.append(str(game_id))
-                    
-            return pids, tids, gids
+        return pids, tids, gids
 
 
 class Team_box_scores:

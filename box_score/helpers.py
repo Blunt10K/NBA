@@ -15,7 +15,7 @@ def get_last_year(year):
 
 # %%
 def extract():
-    from db_utils import get_start_date, clear_dir
+    from db_utils import get_start_date
     import pandas as pd
 
     start_date = get_start_date()
@@ -72,7 +72,6 @@ def extract():
 
         count += 1
 
-    clear_dir(directory)
 
     return
 
@@ -82,6 +81,7 @@ def transform():
     import pyspark.sql.functions as f
     from os import environ
     from os.path import expanduser, join as osjoin
+    from db_utils import clear_dir
 
 
     spark = SparkSession.builder.appName('box_score').getOrCreate()  
@@ -97,6 +97,8 @@ def transform():
     box_scores(df, root)
     players(df, root)
     teams(df, root)
+
+    clear_dir(path)
 
     return
 
