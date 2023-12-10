@@ -18,5 +18,7 @@ start_date=pendulum.datetime(2023, 12, 11, tz="UTC")) as dag:
     from calendar_update import create_record
 
     @task(task_id="inject_date")
-    def inject_date():
+    def function():
         create_record()
+
+    inject_date = function()    
