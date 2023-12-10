@@ -40,14 +40,12 @@ def create_record():
     conn = create_connector()
     table = 'calendar'
 
-    print(conn)
     df = pd.DataFrame(data=dict(game_date = [datetime.today()],
                                 quarter_from = [get_first_day_of_the_quarter(datetime.today())],
                                 quarter_to = [get_last_day_of_the_quarter(datetime.today())]))
     
     
     df.to_sql(table, conn, if_exists = 'append', index = False)
-    print(df)
     conn.dispose()
 
     return
