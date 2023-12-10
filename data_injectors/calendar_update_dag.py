@@ -1,6 +1,6 @@
 # %%
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.decorators import task
 import pendulum
 import sys
 from os.path import expanduser,join as osjoin
