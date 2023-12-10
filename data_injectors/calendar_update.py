@@ -29,7 +29,7 @@ def create_connector():
     db = Variable.get('NBA_DB')
     port = Variable.get('PORT')
     user = Variable.get('USER')
-    pswd = Variable.get('PSWD!')
+    pswd = Variable.get('PSWD')
 
     conn = make_engine(host, port, user, pswd, db)
     
