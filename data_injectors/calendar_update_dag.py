@@ -12,7 +12,7 @@ start_date=pendulum.datetime(2023, 12, 11, tz="UTC")) as dag:
 
     dag.doc_md = __doc__
 
-    code_directory = expanduser(osjoin('~/airflow','dags','data_injectors'))
+    code_directory = expanduser(osjoin('~/airflow','dags','NBA','data_injectors'))
     sys.path.insert(0,code_directory)
 
     from calendar_update import create_record

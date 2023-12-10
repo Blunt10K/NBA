@@ -12,7 +12,7 @@ start_date=pendulum.datetime(2022, 6, 15, tz="UTC")) as dag:
 
     dag.doc_md = __doc__
 
-    code_directory = expanduser(osjoin('~/airflow','dags','box_score'))
+    code_directory = expanduser(osjoin('~/airflow','dags','NBA','box_score'))
     sys.path.insert(0,code_directory)
 
     from helpers import extract,transform,load
