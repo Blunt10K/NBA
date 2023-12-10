@@ -1,6 +1,6 @@
 # %%
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.decorators import task
 import pendulum
 import sys
 from os.path import expanduser,join as osjoin
@@ -8,7 +8,7 @@ from os.path import expanduser,join as osjoin
 
 # %%
 with DAG('play_by_play_etl',default_args={'retries': 4,'owner':'blunt10k'},description='NBA play by play DAG',
-schedule_interval='0 15 * * *',catchup=False,tags=['nba_pbp'],
+schedule_interval='0 15 * * *',catchup=False,tags=['nba_stats','nba_pbp'],
 start_date=pendulum.datetime(2022, 6, 15, tz="UTC")) as dag:
 
     dag.doc_md = __doc__
@@ -20,8 +20,16 @@ start_date=pendulum.datetime(2022, 6, 15, tz="UTC")) as dag:
     from transform import transform_load
     # from load import load
 
-    extract_op = PythonOperator(task_id = 'extract',python_callable=extract)
+    @task(task_id='extract')
+    def extract_func():
+        extract()
 
-    transform_op = PythonOperator(task_id = 'transform_load',python_callable=transform_load)
+    @task(task_id='transform_load')
+    def transform_load_func():
+        transform_load()
+
+
+    extract_op = extract_func()
+    transform_op = transform_load_func()
 
     extract_op >> transform_op #>> load_op
