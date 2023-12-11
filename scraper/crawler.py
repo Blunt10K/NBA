@@ -52,7 +52,7 @@ class GamesSpider(CrawlSpider):
         items = response.css('script[type="application/json"]::text')
         root = Variable.get('EXTDISK')
 
-        extract_path = expanduser(join(root,'spark_apps','games'))
+        extract_path = join(root,'spark_apps','games')
 
         for i in items:
             to_write = json.loads(i.get())['props']['pageProps']
