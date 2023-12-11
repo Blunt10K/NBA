@@ -51,7 +51,7 @@ class GamesSpider(CrawlSpider):
 
     rules = [Rule(LinkExtractor(allow=['\w+-vs-\w+-\d+/box-score#box-score']), callback='parse_page')]
 
-    def parse(self, response):
+    def parse_page(self, response):
         items = response.css('script[type="application/json"]::text')
         print(items)
 
