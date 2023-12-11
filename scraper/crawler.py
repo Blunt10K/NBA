@@ -59,3 +59,4 @@ class GamesSpider(CrawlSpider):
             fname = join(extract_path, to_write['playByPlay']['gameId'] + '.json')
             with open(fname, 'w') as fp:
                 json.dump(to_write, fp)
+                print(fname)
