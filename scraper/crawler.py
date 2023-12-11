@@ -45,14 +45,16 @@ class GamesSpider(CrawlSpider):
     allowed_domains = ['nba.com']
     start_urls = list(game_dates())
     REDIRECT_ENABLED = False
+    # extract_path = join(Variable.get('EXTDISK'),'spark_apps','games','data.json')
+
+    # custom_settings = dict(FEEDS = {extract_path: {'format':'jsonl','overwrite':False}})
 
     rules = [Rule(LinkExtractor(allow=['\w+-vs-\w+-\d+/box-score#box-score']), callback='parse_page')]
 
     def parse_page(self, response):
         items = response.css('script[type="application/json"]::text')
-        root = Variable.get('EXTDISK')
 
-        extract_path = join(root,'spark_apps','games')
+        extract_path = join(Variable.get('EXTDISK'),'spark_apps','games','data.json')
 
         for i in items:
             to_write = json.loads(i.get())['props']['pageProps']
