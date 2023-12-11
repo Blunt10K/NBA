@@ -3,15 +3,42 @@ from scrapy.linkextractors import LinkExtractor
 from datetime import datetime as dt, timedelta as td
 import json
 from os.path import join, expanduser
+import pandas as pd
+from sqlalchemy import create_engine
+from airflow.models import Variable
+
+
+def make_engine():
+    host = Variable.get('HOSTNAME')
+    db = Variable.get('NBA_DB')
+    port = Variable.get('PORT')
+    user = Variable.get('USER')
+    pswd = Variable.get('PSWD')
+
+    return create_engine(f"postgresql+psycopg2://{user}:{pswd}@{host}:{port}/{db}")
+
 
 def game_dates():
-    start_date = dt(1996,10,8)
-    end_date = dt.today()
+    engine = make_engine()
+    latest_scrape = pd.read_sql('SELECT max(game_date) as latest from scraped_games', engine)
+    latest_scrape = latest_scrape.loc[0,'latest']
 
-    days = (end_date - start_date).days
+    if latest_scrape:
+        query = f'''SELECT game_date from calendar
+        where (game_date > to_date({latest_scrape.strftime('%Y-%m-%d')},'YYYY-MM-DD'))
+        AND (to_date({(latest_scrape + td(1)).strftime('%Y-%m-%d')},'YYYY-MM-DD') between quarter_from and quarter_to)'''
+    else:
+        query = f'''SELECT game_date from calendar
+        where (game_date > to_date('1996-11-01','YYYY-MM-DD'))
+        AND (to_date('1996-11-01','YYYY-MM-DD') between quarter_from and quarter_to)'''
 
-    for i in range(days):
-        yield 'https://www.nba.com/games?date='+dt.strftime(start_date + td(i+1), '%Y-%m-%d')
+    df = pd.read_sql(query, engine)
+
+    engine.dispose()
+
+    for i in df.itertuples():
+        yield 'https://www.nba.com/games?date='+dt.strftime(i.game_date, '%Y-%m-%d')
+
 
 class GamesSpider(CrawlSpider):
     name = 'pbp-games'
@@ -23,8 +50,9 @@ class GamesSpider(CrawlSpider):
 
     def parse_page(self, response):
         items = response.css('script[type="application/json"]::text')
+        root = Variable.get('EXTDISK')
 
-        extract_path = expanduser(join('~','spark_apps','games'))
+        extract_path = expanduser(join(root,'spark_apps','games'))
 
         for i in items:
             to_write = json.loads(i.get())['props']['pageProps']
