@@ -51,7 +51,7 @@ class GamesSpider(CrawlSpider):
 
     rules = [Rule(LinkExtractor(allow=['\w+-vs-\w+-\d+/box-score#box-score']), callback='parse_page')]
 
-    def parse_page(self, response):
+    def parse(self, response):
         items = response.css('script[type="application/json"]::text')
 
         extract_path = join(Variable.get('EXTDISK'),'spark_apps','games','data.json')
@@ -61,4 +61,3 @@ class GamesSpider(CrawlSpider):
             fname = join(extract_path, to_write['playByPlay']['gameId'] + '.json')
             with open(fname, 'w') as fp:
                 json.dump(to_write, fp)
-                print(fname)
