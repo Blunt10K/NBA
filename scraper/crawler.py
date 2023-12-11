@@ -53,6 +53,7 @@ class GamesSpider(CrawlSpider):
 
     def parse(self, response):
         items = response.css('script[type="application/json"]::text')
+        print(items)
 
         extract_path = join(Variable.get('EXTDISK'),'spark_apps','games','data.json')
 
