@@ -53,12 +53,12 @@ class GamesSpider(CrawlSpider):
 
     def parse_page(self, response):
         items = response.css('script[type="application/json"]::text')
-        print(items)
 
-        extract_path = join(Variable.get('EXTDISK'),'spark_apps','games','data.json')
+        # extract_path = join(Variable.get('EXTDISK'),'spark_apps','games','data.json')
 
         for i in items:
-            to_write = json.loads(i.get())['props']['pageProps']
-            fname = join(extract_path, to_write['playByPlay']['gameId'] + '.json')
-            with open(fname, 'w') as fp:
-                json.dump(to_write, fp)
+            yield i.get()
+        #     to_write = json.loads(i.get())['props']['pageProps']
+        #     fname = join(extract_path, to_write['playByPlay']['gameId'] + '.json')
+        #     with open(fname, 'w') as fp:
+        #         json.dump(to_write, fp)
