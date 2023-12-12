@@ -6,6 +6,7 @@ from os.path import join
 import pandas as pd
 from sqlalchemy import create_engine
 from airflow.models import Variable
+from scrapy.item import Item, Field
 
 
 def make_engine():
@@ -40,6 +41,14 @@ def game_dates():
         yield 'https://www.nba.com/games?date='+dt.strftime(i.game_date, '%Y-%m-%d')
 
 
+class PlayByPlay(Item):
+    pbp = Field()
+
+    def __repr__(self):
+        # """only print out attr1 after exiting the Pipeline"""
+        return repr('')
+
+
 class GamesSpider(CrawlSpider):
 
     name = 'pbp-games'
@@ -60,7 +69,7 @@ class GamesSpider(CrawlSpider):
         # self.logger.info(f"done: {items[0].get()}")
 
         for i in items:
-            yield dict(pbp = json.loads(i.get()))
+            yield PlayByPlay(pbp = json.loads(i.get()))
             # to_write = json.loads(i.get())['props']['pageProps']
             # fname = join(extract_path, to_write['playByPlay']['gameId'] + '.json')
             # with open(fname, 'w') as fp:
