@@ -66,7 +66,7 @@ class GamesSpider(CrawlSpider):
     def parse_start_url(self, response):
         link_extractor = LinkExtractor()
         for link in link_extractor.extract_links(response):
-            yield self.parse_game(response.follow())
+            yield self.parse_game(response.follow(link))
 
     def parse_game(self, response):
         items = response.css('script[type="application/json"]::text')
