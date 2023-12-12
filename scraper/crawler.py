@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 from airflow.models import Variable
 
 
-def make_engine(self):
+def make_engine():
     host = Variable.get('HOSTNAME')
     db = Variable.get('NBA_DB')
     port = Variable.get('PORT')
@@ -18,8 +18,8 @@ def make_engine(self):
     return create_engine(f"postgresql+psycopg2://{user}:{pswd}@{host}:{port}/{db}")
 
 
-def game_dates(self):
-    engine = self.make_engine()
+def game_dates():
+    engine = make_engine()
     latest_scrape = pd.read_sql('SELECT max(game_date) as latest from scraped_games', engine)
     latest_scrape = latest_scrape.loc[0,'latest']
 
