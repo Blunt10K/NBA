@@ -51,10 +51,12 @@ class GamesSpider(CrawlSpider):
     # custom_settings = dict(FEEDS = {extract_path: {'format':'jsonl','overwrite':False}})
 
     rules = [Rule(LinkExtractor(allow=['\w+-vs-\w+-\d+/box-score#box-score']), callback='parse_start_url')]
+
     
 
     def parse_start_url(self, response):
         items = response.css('script[type="application/json"]::text')
+        self.logger.info(f"done: {items[0].get()}")
 
         for i in items:
             yield i.get()
