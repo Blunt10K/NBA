@@ -60,7 +60,7 @@ class GamesSpider(CrawlSpider):
         # self.logger.info(f"done: {items[0].get()}")
 
         for i in items:
-            yield dict(pbp = i.get())
+            yield dict(pbp = json.loads(i.get()))
             # to_write = json.loads(i.get())['props']['pageProps']
             # fname = join(extract_path, to_write['playByPlay']['gameId'] + '.json')
             # with open(fname, 'w') as fp:
