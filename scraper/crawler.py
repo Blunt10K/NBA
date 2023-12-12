@@ -55,9 +55,8 @@ class GamesSpider(CrawlSpider):
     
 
     def parse_page(self, response):
-        self.log('done')
         items = response.css('script[type="application/json"]::text')
-        self.log(f'done: {len(items)}')
+        self.logger.info(f"done: {len(items)}")
         extract_path = join(Variable.get('EXTDISK'),'spark_apps','games')
         print(extract_path)
 
