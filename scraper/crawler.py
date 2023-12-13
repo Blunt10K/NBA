@@ -60,13 +60,15 @@ class GamesSpider(CrawlSpider):
     # custom_settings = dict(FEEDS = {extract_path: {'format':'jsonl','overwrite':False}})
     FEEDS = {join(Variable.get('EXTDISK'),'spark_apps','games','data.json') : {'format': 'jsonlines'}}
 
-    rules = [Rule(LinkExtractor(allow=['game/\w+-vs-\w+-\d+/box-score#box-score']), callback='parse_game')]
+    # rules = [Rule(LinkExtractor(allow=['game/\w+-vs-\w+-\d+/box-score#box-score']), callback='parse_game')]
+
+    allow_pat = 'game/\w+-vs-\w+-\d+/box-score#box-score'
 
     
-    # def parse_start_url(self, response):
-    #     link_extractor = LinkExtractor()
-    #     for link in link_extractor.extract_links(response):
-    #         yield response.follow(link,callback = self.parse_game)
+    def parse_start_url(self, response):
+        link_extractor = LinkExtractor(allow= self.allow_pat, allow_domains=self.allowed_domains)
+        for link in link_extractor.extract_links(response):
+            yield response.follow(link,callback = self.parse_game)
 
     def parse_game(self, response):
         items = response.css('script[type="application/json"]::text')
