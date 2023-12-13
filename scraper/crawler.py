@@ -60,7 +60,7 @@ class GamesSpider(CrawlSpider):
     # custom_settings = dict(FEEDS = {extract_path: {'format':'jsonl','overwrite':False}})
     # FEEDS = {join(Variable.get('EXTDISK'),'spark_apps','games','data.json') : {'format': 'jsonlines'}}
 
-    rules = [Rule(LinkExtractor(allow=['[\S]+-vs-\w+-\d+']), callback='parse_game')]
+    rules = [Rule(LinkExtractor(allow=[r'game/\w+\-vs\-\w+\-\d+']), callback='parse_game')]
 
     # allow_pat = ['game/\w+-vs-\w+-\d+/box-score#box-score']
 
