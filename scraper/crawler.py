@@ -62,7 +62,7 @@ class GamesSpider(CrawlSpider):
 
     # rules = [Rule(LinkExtractor(allow=['game/\w+-vs-\w+-\d+/box-score#box-score']), callback='parse_game')]
 
-    allow_pat = 'games/\w+-vs-\w+-\d+/box-score#box-score'
+    allow_pat = '\S+\?\w+-vs-\w+-\d+/box-score#box-score'
 
     
     def parse_start_url(self, response):
