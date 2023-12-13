@@ -65,10 +65,11 @@ class GamesSpider(CrawlSpider):
     # allow_pat = ['game/\w+-vs-\w+-\d+/box-score#box-score']
 
     
-    # def parse_start_url(self, response):
-    #     link_extractor = LinkExtractor(allow= self.allow_pat, allow_domains=self.allowed_domains)
-    #     for link in link_extractor.extract_links(response):
-    #         yield response.follow(link,callback = self.parse_game)
+    def parse_start_url(self, response):
+        # link_extractor = LinkExtractor(allow= self.allow_pat, allow_domains=self.allowed_domains)
+        # for link in link_extractor.extract_links(response):
+        #     yield response.follow(link,callback = self.parse_game)
+        list(self.parse_game(response))
 
     def parse_game(self, response):
         items = response.css('script[type="application/json"]::text')
