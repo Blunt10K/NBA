@@ -58,7 +58,7 @@ class GamesSpider(CrawlSpider):
     # extract_path = join(Variable.get('EXTDISK'),'spark_apps','games','data.json')
 
     # custom_settings = dict(FEEDS = {extract_path: {'format':'jsonl','overwrite':False}})
-    FEEDS = {join(Variable.get('EXTDISK'),'spark_apps','games','data.json') : {'format': 'jsonlines'}}
+    # FEEDS = {join(Variable.get('EXTDISK'),'spark_apps','games','data.json') : {'format': 'jsonlines'}}
 
     rules = [Rule(LinkExtractor(allow=['[\S]+-vs-\w+-\d+']), callback='parse_game')]
 
@@ -72,7 +72,7 @@ class GamesSpider(CrawlSpider):
 
     def parse_game(self, response):
         items = response.css('script[type="application/json"]::text')
-        # self.logger.info(f"done: {items[0].get()}")
+        self.logger.info(f"done: {items[0].get()}")
 
         for i in items:
             return PlayByPlay(pbp = json.loads(i.get()))
