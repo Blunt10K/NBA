@@ -48,7 +48,13 @@ class PlayByPlay(Item):
     def __repr__(self):
         # """only print out attr1 after exiting the Pipeline"""
         return repr('')
+    
+class PlayByPlayGroup(Item):
+    item = Field()
 
+    def __repr__(self):
+        # """only print out attr1 after exiting the Pipeline"""
+        return repr('')
 
 class GamesSpider(CrawlSpider):
 
@@ -71,7 +77,7 @@ class GamesSpider(CrawlSpider):
         
         for s in script:
             for link in re.findall(self.allow_pat, s.get()):
-                yield response.follow(link,callback = self.parse_game)
+                yield PlayByPlayGroup(item = response.follow(link,callback = self.parse_game))
 
     def parse_game(self, response):
         items = response.css('script[type="application/json"]::text')
