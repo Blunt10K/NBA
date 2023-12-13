@@ -68,9 +68,10 @@ class GamesSpider(CrawlSpider):
     
     def parse_start_url(self, response):
         script = response.css('script[type="application/json"]::text')
+        
         for s in script:
             for link in re.findall(self.allow_pat, s.get()):
-                yield response.follow(link,callback = self.parse_game)
+                response.follow(link,callback = self.parse_game)
 
     def parse_game(self, response):
         items = response.css('script[type="application/json"]::text')
