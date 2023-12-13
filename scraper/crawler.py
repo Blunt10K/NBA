@@ -55,6 +55,7 @@ class GamesSpider(CrawlSpider):
     allowed_domains = ['nba.com']
     start_urls = list(game_dates())
     REDIRECT_ENABLED = False
+    base_url = 'https://nba.com/'
     # extract_path = join(Variable.get('EXTDISK'),'spark_apps','games','data.json')
 
     # custom_settings = dict(FEEDS = {extract_path: {'format':'jsonl','overwrite':False}})
