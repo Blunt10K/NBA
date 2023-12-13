@@ -71,14 +71,14 @@ class GamesSpider(CrawlSpider):
         
         for s in script:
             for link in re.findall(self.allow_pat, s.get()):
-                response.follow(link,callback = self.parse_game)
+                yield response.follow(link,callback = self.parse_game)
 
     def parse_game(self, response):
         items = response.css('script[type="application/json"]::text')
         self.logger.info(f"done: {items[0].get()}")
 
         for i in items:
-            return PlayByPlay(pbp = json.loads(i.get()))
+            yield PlayByPlay(pbp = json.loads(i.get()))
             # to_write = json.loads(i.get())['props']['pageProps']
             # fname = join(extract_path, to_write['playByPlay']['gameId'] + '.json')
             # with open(fname, 'w') as fp:
