@@ -42,34 +42,14 @@ def game_dates():
         yield 'https://www.nba.com/games?date='+dt.strftime(i.game_date, '%Y-%m-%d')
 
 
-class PlayByPlay(Item):
-    pbp = Field()
-
-    def __repr__(self):
-        # """only print out attr1 after exiting the Pipeline"""
-        return repr('')
-    
-class PlayByPlayGroup(Item):
-    item = Field()
-
-    def __repr__(self):
-        # """only print out attr1 after exiting the Pipeline"""
-        return repr('')
-
 class GamesSpider(CrawlSpider):
 
     name = 'pbp-games'
     allowed_domains = ['nba.com']
     start_urls = list(game_dates())
     REDIRECT_ENABLED = False
-    # extract_path = join(Variable.get('EXTDISK'),'spark_apps','games','data.json')
-
-    # custom_settings = dict(FEEDS = {extract_path: {'format':'jsonl','overwrite':False}})
-    # FEEDS = {join(Variable.get('EXTDISK'),'spark_apps','games','data.json') : {'format': 'jsonlines'}} \w+\-vs\-\w+\-\d+
-
-    rules = [Rule(LinkExtractor(allow=[r'game/\w+-vs-\w+-\d+']), callback='parse_game',follow=True)]
-
-    allow_pat = 'game/\w+-vs-\w+-\d+'
+    allow_pat = r'game/\w+-vs-\w+-\d+'
+    rules = [Rule(LinkExtractor(allow=[allow_pat]), callback='parse_game',follow=True)]
 
     
     def parse_start_url(self, response):
@@ -86,6 +66,6 @@ class GamesSpider(CrawlSpider):
             extract_path = join(Variable.get('EXTDISK'),'spark_apps','games')
             to_write = json.loads(i.get())['props']['pageProps']
             fname = join(extract_path, to_write['playByPlay']['gameId'] + '.json')
-            
+
             with open(fname, 'w') as fp:
                 json.dump(to_write, fp)
