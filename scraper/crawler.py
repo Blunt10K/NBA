@@ -55,22 +55,20 @@ class GamesSpider(CrawlSpider):
     allowed_domains = ['nba.com']
     start_urls = list(game_dates())
     REDIRECT_ENABLED = False
-    base_url = 'https://nba.com/'
     # extract_path = join(Variable.get('EXTDISK'),'spark_apps','games','data.json')
 
     # custom_settings = dict(FEEDS = {extract_path: {'format':'jsonl','overwrite':False}})
     # FEEDS = {join(Variable.get('EXTDISK'),'spark_apps','games','data.json') : {'format': 'jsonlines'}} \w+\-vs\-\w+\-\d+
 
-    rules = [Rule(LinkExtractor(allow=[r'game/']), callback='parse_game',follow=True)]
+    # rules = [Rule(LinkExtractor(allow=[r'game/']), callback='parse_game',follow=True)]
 
-    # allow_pat = ['game/\w+-vs-\w+-\d+/box-score#box-score']
+    allow_pat = ['game/\w+-vs-\w+-\d+']
 
     
-    # def parse_start_url(self, response):
-    #     # link_extractor = LinkExtractor(allow= self.allow_pat, allow_domains=self.allowed_domains)
-    #     # for link in link_extractor.extract_links(response):
-    #     #     yield response.follow(link,callback = self.parse_game)
-    #     list(self.parse_game(response))
+    def parse_start_url(self, response):
+        link_extractor = LinkExtractor(allow= self.allow_pat, allow_domains=self.allowed_domains)
+
+        return [response.follow(link,callback = self.parse_game) for link in link_extractor.extract_links(response)]
 
     def parse_game(self, response):
         items = response.css('script[type="application/json"]::text')
