@@ -7,7 +7,7 @@ with open('results.log','r') as fp:
     logs = fp.read().split('\n')
 
 # %%
-search_pat = r'[\s\S]+DEBUG: Crawled \((\d+)\) <GET https://www.nba.com/game/(\w+-vs-\w+)-(\d+)> \(referer: https://www.nba.com/games\?date=(\d+-\d+-\d+)\)$'
+search_pat = r'[\s\S]+DEBUG: Crawled \((\d+)\)[\S\s]+https://www.nba.com/game/(\w+-vs-\w+)-(\d+)[\s\S]+\([\s\S]+https://www.nba.com/games\?date=(\d+-\d+-\d+)'
 # [dict(response = )]
 # %%
 
