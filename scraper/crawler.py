@@ -6,7 +6,6 @@ from os.path import join
 import pandas as pd
 from sqlalchemy import create_engine
 from airflow.models import Variable
-from scrapy.item import Item, Field
 import re
 
 
