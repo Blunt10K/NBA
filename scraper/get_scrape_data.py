@@ -37,6 +37,6 @@ def extract_fields():
 df = extract_fields()
 conn = make_engine()
 
-df.to_sql('scrape_logs', conn, if_exists='append')
+df.to_sql('scrape_logs', conn, if_exists='append', index=False)
 
 conn.dispose()
