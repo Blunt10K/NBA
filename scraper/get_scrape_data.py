@@ -26,7 +26,7 @@ def extract_fields():
     referer_pat = r'[\s\S]+\([\s\S]+https://www.nba.com/games\?date=(\d+-\d+-\d+)'
     search_pat = log_flag + game_pat + referer_pat
 
-    data = [dict(zip(['response','vs','game_id','gate_date'],
+    data = [dict(zip(['response','game_title','game_id','gate_date'],
                      re.search(search_pat,i).groups())) 
                      for i in logs if re.search(search_pat,i)]
 
