@@ -27,7 +27,7 @@ start_date=pendulum.datetime(2023, 12, 10, tz="UTC")) as dag:
     
 
     scrape_games = BashOperator(task_id="scrape_pbp",bash_command="bash scrape_games.sh ",cwd=cwd)
-    failed_scrapes = BashOperator(task_id="get_failed_scrapes",bash_command="bash failed_scrapes.sh ",cwd=cwd)
+    failed_scrapes = BashOperator(task_id="get_failed_scrapes",bash_command="bash failed_games.sh ",cwd=cwd)
     load_logs = scrape_logs_to_db()
 
     scrape_games >> failed_scrapes >> load_logs
