@@ -4,19 +4,9 @@ from datetime import datetime as dt, timedelta as td
 import json
 from os.path import join
 import pandas as pd
-from sqlalchemy import create_engine
 from airflow.models import Variable
 import re
-
-
-def make_engine():
-    host = Variable.get('HOSTNAME')
-    db = Variable.get('NBA_DB')
-    port = Variable.get('PORT')
-    user = Variable.get('USER')
-    pswd = Variable.get('PSWD')
-
-    return create_engine(f"postgresql+psycopg2://{user}:{pswd}@{host}:{port}/{db}")
+from db_utils import make_engine
 
 
 def game_dates():
@@ -63,7 +53,7 @@ class GamesSpider(CrawlSpider):
         items = response.css('script[type="application/json"]::text')
 
         for i in items:
-            extract_path = join(Variable.get('EXTDISK'),'spark_apps','games')
+            extract_path = join(Variable.get('EXTDISK'),'spark_apps','NBA','games')
             to_write = json.loads(i.get())['props']['pageProps']
             fname = join(extract_path, to_write['playByPlay']['gameId'] + '.json')
 
