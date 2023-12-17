@@ -30,6 +30,7 @@ def extract_fields():
 def clear_logs():
     remove(crawl_logs)
 
+
 def write_to_db():
 
     df = extract_fields()
