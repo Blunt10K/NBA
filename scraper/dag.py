@@ -7,7 +7,7 @@ import sys
 from os.path import expanduser,join as osjoin
 
 # %%
-with DAG('add_dates_to_calendar',default_args={'retries': 4,'owner':'blunt10k'},description='Data injector to calendar table',
+with DAG('scrape_games',default_args={'retries': 4,'owner':'blunt10k'},description='Data injector to calendar table',
 schedule_interval='0 12 * * *',catchup=False,tags=['nba_stats'],
 start_date=pendulum.datetime(2023, 12, 10, tz="UTC")) as dag:
 
