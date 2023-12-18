@@ -16,8 +16,8 @@ def game_dates():
 
     if latest_scrape:
         query = f'''SELECT game_date from calendar
-        where (game_date > to_date({latest_scrape.strftime('%Y-%m-%d')},'YYYY-MM-DD'))
-        AND (to_date({(latest_scrape + td(1)).strftime('%Y-%m-%d')},'YYYY-MM-DD') between quarter_from and quarter_to)'''
+        where (game_date > to_date('{latest_scrape.strftime('%Y-%m-%d')}','YYYY-MM-DD'))
+        AND (to_date('{(latest_scrape + td(1)).strftime('%Y-%m-%d')}','YYYY-MM-DD') between quarter_from and quarter_to)'''
     else:
         query = f'''SELECT game_date from calendar
         where (game_date >= to_date('1996-11-01','YYYY-MM-DD'))
