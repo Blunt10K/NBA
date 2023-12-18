@@ -11,7 +11,7 @@ from db_utils import make_engine
 
 def game_dates():
     engine = make_engine()
-    latest_scrape = pd.read_sql('SELECT max(game_date) as latest from scraped_games', engine)
+    latest_scrape = pd.read_sql('SELECT max(game_date) as latest from scrape_logs', engine)
     latest_scrape = latest_scrape.loc[0,'latest']
 
     if latest_scrape:
