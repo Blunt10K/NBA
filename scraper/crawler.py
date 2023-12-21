@@ -16,7 +16,11 @@ def game_dates():
 
     if latest_scrape:
         query = f'''SELECT game_date from calendar
-        where (to_date('{(latest_scrape + td(30)).strftime('%Y-%m-%d')}','YYYY-MM-DD')
+        where
+        (to_date('{(latest_scrape + td(30)).strftime('%Y-%m-%d')}','YYYY-MM-DD')
+        between quarter_from and quarter_to)
+        OR
+        (to_date('{(latest_scrape + td(150)).strftime('%Y-%m-%d')}','YYYY-MM-DD')
         between quarter_from and quarter_to)
         '''
     else:
