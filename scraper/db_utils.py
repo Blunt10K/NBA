@@ -72,7 +72,7 @@ def update_calendar():
     t = text(update_query(min_date, max_date))
     
     connection.execute(t)
-    connection.commit()
+    # connection.commit() # for SQLAlchemy 2.0 and higher
 
     connection.close()
 
