@@ -8,7 +8,7 @@ from os.path import expanduser,join as osjoin
 
 # %%
 with DAG('scrape_games',default_args={'retries': 4,'owner':'blunt10k'},description='Data injector to calendar table',
-schedule_interval='0 12 * * *',catchup=False,tags=['nba_stats'],
+schedule_interval='0 * * * *',catchup=False,tags=['nba_stats'],
 start_date=pendulum.datetime(2023, 12, 10, tz="UTC")) as dag:
 
     dag.doc_md = __doc__
