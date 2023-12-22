@@ -25,7 +25,7 @@ start_date=pendulum.datetime(2023, 12, 10, tz="UTC")) as dag:
     def scrape_logs_to_db():
         write_to_db()
     
-    @task(task_id="update_calendar")
+    @task(task_id="update_calendar",retries=0)
     def update_calendar_func():
         update_calendar()
 

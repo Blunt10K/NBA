@@ -11,7 +11,9 @@ from db_utils import make_engine
 
 def game_dates():
     engine = make_engine()
-    latest_scrape = pd.read_sql('SELECT max(game_date) as latest from scrape_logs', engine)
+    query = '''SELECT max(game_date) as latest from calendar
+            where scraped = TRUE'''
+    latest_scrape = pd.read_sql(query, engine)
     latest_scrape = latest_scrape.loc[0,'latest']
 
     if latest_scrape:
@@ -19,10 +21,9 @@ def game_dates():
         where
         (to_date('{(latest_scrape + td(30)).strftime('%Y-%m-%d')}','YYYY-MM-DD')
         between quarter_from and quarter_to)
-        OR
-        (to_date('{(latest_scrape + td(150)).strftime('%Y-%m-%d')}','YYYY-MM-DD')
-        between quarter_from and quarter_to)
-        '''
+        and
+        game_date > to_date('{(latest_scrape).strftime('%Y-%m-%d')}','YYYY-MM-DD')'''
+
     else:
         query = f'''SELECT game_date from calendar
         where (game_date >= to_date('1996-11-01','YYYY-MM-DD'))
