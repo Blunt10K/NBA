@@ -4,3 +4,6 @@ test*.*
 .ipynp_checkpoints
 .DS_Store
 *.log
+*.parquet
+scraper/pbps
+.idea
